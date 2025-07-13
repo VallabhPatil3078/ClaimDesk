@@ -1,5 +1,5 @@
 # ClaimDesk
 
-#Initial commit
+Initial commit
 
-#ClaimDesk is created to help you find your lost items
+ClaimDesk is created to help you find your lost items
