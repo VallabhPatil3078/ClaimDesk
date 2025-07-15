@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { Link, NavLink } from 'react-router-dom';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const linkClasses = ({ isActive }) =>
+    `text-gray-700 hover:text-blue-600 ${isActive ? 'text-red-600 font-semibold' : ''}`;
 
   return (
     <nav className="bg-white shadow-md px-6 sm:px-8 py-4">
@@ -12,10 +16,10 @@ function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex space-x-6">
-          <a href="#" className="text-gray-700 hover:text-blue-600">Home</a>
-          <a href="#" className="text-gray-700 hover:text-blue-600">Login</a>
-          <a href="#" className="text-gray-700 hover:text-blue-600">Sign Up</a>
-          <a href="#" className="text-gray-700 hover:text-blue-600">About</a>
+          <NavLink to="/" className={linkClasses}>Home</NavLink>
+          <NavLink to="/login" className={linkClasses}>Login</NavLink>
+          <NavLink to="/signup" className={linkClasses}>Sign Up</NavLink>
+          <NavLink to="/about" className={linkClasses}>About</NavLink>
         </div>
 
         {/* Hamburger icon (mobile) */}
@@ -29,10 +33,10 @@ function Navbar() {
       {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden mt-4 flex flex-col items-center space-y-4">
-          <a href="#" className="text-gray-700 hover:text-blue-600">Home</a>
-          <a href="#" className="text-gray-700 hover:text-blue-600">Login</a>
-          <a href="#" className="text-gray-700 hover:text-blue-600">Sign Up</a>
-          <a href="#" className="text-gray-700 hover:text-blue-600">About</a>
+          <NavLink to="/" className={linkClasses} onClick={() => setIsOpen(false)}>Home</NavLink>
+          <NavLink to="/login" className={linkClasses} onClick={() => setIsOpen(false)}>Login</NavLink>
+          <NavLink to="/signup" className={linkClasses} onClick={() => setIsOpen(false)}>Sign Up</NavLink>
+          <NavLink to="/about" className={linkClasses} onClick={() => setIsOpen(false)}>About</NavLink>
         </div>
       )}
     </nav>

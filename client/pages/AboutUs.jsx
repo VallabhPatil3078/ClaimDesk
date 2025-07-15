@@ -41,8 +41,6 @@ const members = [
 function AboutUs() {
   return (
     <div className="flex flex-col min-h-screen bg-[#e6eff8]">
-      {/* Navbar */}
-      <Navbar />
 
       {/* Main Content */}
       <main className="flex-grow pt-16 pb-24 px-4 sm:px-6 lg:px-10">
@@ -88,8 +86,6 @@ function AboutUs() {
         </div>
       </main>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

@@ -1,10 +1,11 @@
 import React from 'react';
 import { FiSearch } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom'; // ✅ Import
 import ItemCard from '../components/ItemCard';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 function LostItem() {
+  const navigate = useNavigate(); // ✅ useNavigate hook
+
   const lostItems = [
     { id: 1, title: 'Black Wallet', description: 'Lost near the cafeteria', date: '2025-07-13' },
     { id: 2, title: 'iPhone 13', description: 'Left in the library, 2nd floor', date: '2025-07-10' },
@@ -14,7 +15,6 @@ function LostItem() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#e6eff8]">
-      <Navbar />
 
       <main className="flex-grow pt-16 pb-12 px-6">
         <h1 className="text-4xl font-bold text-center mb-10 text-[#1e293b]">Lost Items</h1>
@@ -28,7 +28,10 @@ function LostItem() {
             />
             <FiSearch className="absolute top-1/2 right-4 transform -translate-y-1/2 text-[#64748b] text-xl" />
           </div>
-          <button className="bg-red-600 text-white px-6 py-3 rounded-md shadow hover:bg-red-700 transition duration-200">
+          <button
+            onClick={() => navigate('/report-lost')} // ✅ Navigate to ReportLost
+            className="bg-red-600 text-white px-6 py-3 rounded-md shadow hover:bg-red-700 transition duration-200"
+          >
             Report Lost Item
           </button>
         </div>
@@ -40,7 +43,6 @@ function LostItem() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }
