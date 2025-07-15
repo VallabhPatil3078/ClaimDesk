@@ -6,12 +6,13 @@ import FoundItem from '../pages/FoundItem';
 import Home from './../pages/Home';
 import ReportLost from './../pages/ReportLost';
 import LostItem from './../pages/LostItem';
+import ReportFound from './../pages/ReportFound';
 
 function App() {
 
   return (
     <>
-      <ReportLost />
+      
     </>
   )
 }

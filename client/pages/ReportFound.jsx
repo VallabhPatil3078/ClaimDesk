@@ -58,7 +58,7 @@ function ReportLost() {
           className="bg-white shadow-xl rounded-xl p-6 sm:p-8 w-full max-w-md space-y-5 sm:space-y-6"
         >
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-700">
-            Report Lost Item
+            Report Found Item
           </h2>
 
           <div>
