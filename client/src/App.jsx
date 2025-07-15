@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import './App.css'
-import Signup from './../pages/SignUp';
 import Login from './../pages/Login';
 import FoundItem from '../pages/FoundItem';
 import Home from './../pages/Home';
