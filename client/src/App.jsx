@@ -6,13 +6,15 @@ import Home from './../pages/Home';
 import ReportLost from './../pages/ReportLost';
 import LostItem from './../pages/LostItem';
 import ReportFound from './../pages/ReportFound';
-import SignUp from './../pages/SignUp';
+import Home from './../pages/Home';
+import Login from './../pages/Login';
+import AboutUs from '../pages/AboutUs';
 
 function App() {
 
   return (
     <>
-      <SignUp />
+      
     </>
   )
 }
