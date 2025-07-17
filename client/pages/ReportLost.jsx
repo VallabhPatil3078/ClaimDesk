@@ -50,7 +50,6 @@ function ReportLost() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Navbar />
 
       <main className="flex-grow flex items-center justify-center pt-20 pb-16 px-4 sm:px-6">
         <form
@@ -163,7 +162,6 @@ function ReportLost() {
         </form>
       </main>
 
-      <Footer />
     </div>
   );
 }

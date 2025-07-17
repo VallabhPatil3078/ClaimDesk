@@ -137,7 +137,6 @@ function Admin() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      <Navbar />
 
       <div className="flex flex-grow">
         {/* Sidebar */}
@@ -187,7 +186,6 @@ function Admin() {
         <main className="flex-grow p-6 overflow-auto">{renderContent()}</main>
       </div>
 
-      <Footer />
     </div>
   );
 }

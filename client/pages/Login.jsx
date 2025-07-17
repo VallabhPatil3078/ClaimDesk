@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -53,7 +54,7 @@ function Login() {
 
             <div className="flex justify-between text-sm text-blue-600 mt-2">
               <a href="#" className="hover:underline">Forgot Password?</a>
-              <a href="#" className="hover:underline">Create New Account</a>
+              <Link to="/signup" className="hover:underline">Create New Account</Link>
             </div>
 
             <div className="flex items-center my-6">
