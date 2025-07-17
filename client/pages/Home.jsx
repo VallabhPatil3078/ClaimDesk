@@ -5,9 +5,12 @@ function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col bg-white text-gray-900 min-h-screen">
+    <div className="flex flex-col bg-blue-50 text-gray-900 min-h-screen">
       {/* Adjust height below navbar (e.g., if navbar is 4rem tall) */}
-      <div className="flex flex-col items-center justify-center px-4 py-12 bg-blue-50" style={{ minHeight: 'calc(100vh - 4rem)' }}>
+      <div
+        className="flex flex-col items-center justify-center px-4 py-12"
+        style={{ minHeight: 'calc(100vh - 4rem)' }}
+      >
         <h1 className="text-3xl font-bold text-gray-800 mb-8">How can we help you?</h1>
 
         <div className="flex flex-col sm:flex-row gap-6">
