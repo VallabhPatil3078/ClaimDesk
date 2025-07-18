@@ -9,7 +9,7 @@ function Home() {
       {/* Adjust height below navbar (e.g., if navbar is 4rem tall) */}
       <div
         className="flex flex-col items-center justify-center px-4 py-12"
-        style={{ minHeight: 'calc(100vh - 4rem)' }}
+        style={{ minHeight: 'calc(100vh - 10rem)' }}
       >
         <h1 className="text-3xl font-bold text-gray-800 mb-8">How can we help you?</h1>
 
