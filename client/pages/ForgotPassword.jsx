@@ -1,5 +1,8 @@
+// client/src/pages/ForgotPassword.jsx
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ForgotPassword() {
   const [formData, setFormData] = useState({
@@ -7,34 +10,53 @@ function ForgotPassword() {
     newPassword: '',
     confirmPassword: '',
   });
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleReset = (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
 
+    // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       alert('Please enter a valid email address.');
       return;
     }
 
+    // Validate password
     if (formData.newPassword.length < 6) {
       alert('Password must be at least 6 characters.');
       return;
     }
 
+    // Check if passwords match
     if (formData.newPassword !== formData.confirmPassword) {
       alert('Passwords do not match.');
       return;
     }
 
-    console.log('Resetting password for:', formData.email);
-    alert('Password reset successful!');
-    setFormData({ email: '', newPassword: '', confirmPassword: '' });
+    try {
+      setLoading(true);
+      const response = await axios.post('http://localhost:5000/api/auth/reset-password', {
+        email: formData.email,
+        newPassword: formData.newPassword,
+      });
+
+      alert(response.data.message || 'Password reset successful!');
+      setFormData({ email: '', newPassword: '', confirmPassword: '' });
+
+      // Redirect to login after 2 seconds
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to reset password. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,9 +102,10 @@ function ForgotPassword() {
           <div className="flex justify-center items-center">
             <button
               type="submit"
-              className="w-3/4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+              disabled={loading}
+              className="w-3/4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
             >
-              Reset Password
+              {loading ? 'Resetting...' : 'Reset Password'}
             </button>
           </div>
         </form>

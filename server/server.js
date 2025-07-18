@@ -5,7 +5,7 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-// Connect to DB
+// Connect to MongoDB
 connectDB();
 
 // Middleware
@@ -16,9 +16,13 @@ app.use(express.json());
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
-// Item routes
 const itemRoutes = require('./routes/items');
 app.use('/api/items', itemRoutes);
+
+// Health check route
+app.get('/', (req, res) => {
+  res.send('API is running...');
+});
 
 // Start server
 const PORT = process.env.PORT || 5000;
