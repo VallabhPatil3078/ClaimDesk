@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function ReportLost() {
+function ReportFound() {
   const [formData, setFormData] = useState({
     itemName: "",
     location: "",
@@ -156,4 +156,4 @@ function ReportLost() {
   );
 }
 
-export default ReportLost;
+export default ReportFound;

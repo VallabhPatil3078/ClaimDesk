@@ -17,3 +17,11 @@ export const addLostItem = (itemData, token) => {
   });
 };
 
+export const getMyItems = (token) =>
+  API.get('/items/my', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+

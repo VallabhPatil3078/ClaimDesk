@@ -16,7 +16,7 @@ function ItemCard({ item, type = 'found' }) {
 
       <div className="w-1/3 h-full">
         <img
-          src={item.image ? item.image : defaultImage}
+          src={item.imageUrl || defaultImage}
           alt={item.title}
           className="object-cover h-full w-full"
         />
