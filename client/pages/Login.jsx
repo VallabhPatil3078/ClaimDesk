@@ -1,13 +1,27 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { login } from '../src/api/api';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Login API logic here
+
+    try {
+      const res = await login({ email, password });
+      const { token, user } = res.data;
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      alert('Login successful!');
+      // Navigate or redirect to dashboard/home
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Login failed');
+    }
   };
 
   return (
