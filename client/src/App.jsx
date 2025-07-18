@@ -11,6 +11,7 @@ import ReportFound from './../pages/ReportFound';
 import Admin from '../pages/Admin';
 import SignUp from '../pages/SignUp';
 import AboutUs from '../pages/AboutUs';
+import ForgotPassword from '../pages/ForgotPassword';
 
 // Navbar Component
 import Navbar from '../components/Navbar'; // Update the path as needed
@@ -30,6 +31,7 @@ function App() {
         <Route path="/lost-item" element={<LostItem />} />
         <Route path="/report-found" element={<ReportFound />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/forgot-password" element={<ForgotPassword/>}/>
       </Routes>
       <Footer />
     </Router>
