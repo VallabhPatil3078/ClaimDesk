@@ -1,5 +1,8 @@
+// SignUp.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { signup as apiSignup } from '../src/api/api'; // Renamed to avoid conflict
+import { useAuth } from '../src/context/AuthContext'; // Import useAuth hook
 
 function SignUp() {
   const [formData, setFormData] = useState({
@@ -8,23 +11,38 @@ function SignUp() {
     password: '',
     role: 'user',
   });
+  const { login: contextLogin } = useAuth(); // Get the login function from AuthContext
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
 
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(formData.name)) {
-      alert('Name must contain only letters and spaces.');
+      console.error('Name must contain only letters and spaces.'); // Log error instead of alert
+      // You might want to set a state here to display an error message to the user on the UI
       return;
     }
 
-    console.log(formData); // Send to backend here
-    alert("Signup successful!");
+    try {
+      const res = await apiSignup(formData); // Call your API signup function
+      const { token, user } = res.data; // Assuming your backend returns { token, user } after signup
+
+      // Use the login function from AuthContext to update global state and localStorage
+      contextLogin(token, user);
+
+      // Navigate to the home page after successful signup (assuming auto-login)
+      navigate('/');
+      console.log(res.data.message || 'Signup successful!'); // Log success instead of alert
+    } catch (err) {
+      console.error('Signup failed:', err.response?.data?.message || err.message);
+      // You might want to set a state here to display an error message to the user on the UI
+    }
   };
 
   return (

@@ -1,26 +1,32 @@
+// Login.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { login } from '../src/api/api';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { login as apiLogin } from '../src/api/api'; // Renamed to avoid conflict with context's login
+import { useAuth } from '../src/context/AuthContext'; // Import useAuth hook
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login: contextLogin } = useAuth(); // Get the login function from AuthContext and rename it
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await login({ email, password });
-      const { token, user } = res.data;
+      // Call your API login function
+      const res = await apiLogin({ email, password });
+      const { token, user } = res.data; // Assuming your backend returns { token, user }
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      // Use the login function from AuthContext to update global state and localStorage
+      contextLogin(token, user);
 
-      alert('Login successful!');
-      // Navigate or redirect to dashboard/home
+      // Navigate to the home page after successful login
+      navigate('/');
+      console.log('Login successful!'); // Log success instead of alert
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || 'Login failed');
+      console.error('Login failed:', err.response?.data?.message || err.message);
+      // You might want to set a state here to display an error message to the user on the UI
     }
   };
 
