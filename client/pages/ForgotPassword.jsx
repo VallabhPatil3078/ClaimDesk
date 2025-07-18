@@ -32,14 +32,13 @@ function ForgotPassword() {
       return;
     }
 
-    // 👉 Replace this with your actual backend API call
     console.log('Resetting password for:', formData.email);
     alert('Password reset successful!');
     setFormData({ email: '', newPassword: '', confirmPassword: '' });
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-start justify-center min-h-[85vh] bg-gray-100 pt-10">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl shadow-black/40">
         <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">Reset Password</h2>
         <hr className="mb-6 border-t border-gray-300" />

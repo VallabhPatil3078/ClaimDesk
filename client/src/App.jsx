@@ -48,6 +48,7 @@ function App() {
         <Route path="/lost-item" element={<LostItem />} />
         <Route path="/report-found" element={<ReportFound />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
       <Footer />
     </Router>
