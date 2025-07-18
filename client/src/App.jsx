@@ -12,6 +12,7 @@ import ReportLost from './../pages/ReportLost';
 import ReportFound from './../pages/ReportFound';
 import Admin from './../pages/Admin';
 import ForgotPassword from '../pages/ForgotPassword';
+import User from './../pages/User'; // <-- Added User page
 
 // Components
 import Navbar from '../components/Navbar';
@@ -20,9 +21,8 @@ import Footer from '../components/Footer';
 function Layout({ children }) {
   const location = useLocation();
 
-  // Hide footer only on /login
+  // Hide footer on these routes
   const hideFooterRoutes = ['/login'];
-
   const shouldHideFooter = hideFooterRoutes.includes(location.pathname);
 
   return (
@@ -37,20 +37,21 @@ function Layout({ children }) {
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/found-item" element={<FoundItem />} />
-        <Route path="/report-lost" element={<ReportLost />} />
-        <Route path="/lost-item" element={<LostItem />} />
-        <Route path="/report-found" element={<ReportFound />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-      </Routes>
-      <Footer />
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/found-item" element={<FoundItem />} />
+          <Route path="/report-lost" element={<ReportLost />} />
+          <Route path="/lost-item" element={<LostItem />} />
+          <Route path="/report-found" element={<ReportFound />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/user" element={<User />} /> {/* New User page */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }
