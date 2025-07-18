@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Footer from '../components/Footer'; // make sure this path is correct
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -86,9 +85,6 @@ function Login() {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
