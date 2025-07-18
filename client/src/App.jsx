@@ -11,6 +11,7 @@ import AboutUs from './../pages/AboutUs';
 import ReportLost from './../pages/ReportLost';
 import ReportFound from './../pages/ReportFound';
 import Admin from './../pages/Admin';
+import ForgotPassword from '../pages/ForgotPassword';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -36,19 +37,19 @@ function Layout({ children }) {
 function App() {
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/lost-item" element={<LostItem />} />
-          <Route path="/found-item" element={<FoundItem />} />
-          <Route path="/report-lost" element={<ReportLost />} />
-          <Route path="/report-found" element={<ReportFound />} />
-          <Route path="/admin" element={<Admin />} />
-        </Routes>
-      </Layout>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/found-item" element={<FoundItem />} />
+        <Route path="/report-lost" element={<ReportLost />} />
+        <Route path="/lost-item" element={<LostItem />} />
+        <Route path="/report-found" element={<ReportFound />} />
+        <Route path="/admin" element={<Admin />} />
+      </Routes>
+      <Footer />
     </Router>
   );
 }

@@ -6,12 +6,13 @@ import Footer from '../components/Footer';
 import shardoolPhoto from '../assets/shardool_photo.jpg';
 import vallabhPhoto from '../assets/vallabh_patil.jpg';
 import tejasPhoto from '../assets/tejas_photo.jpg';
+import adityaPhoto from '../assets/aditya_photo.jpeg';
 
 const members = [
   {
     name: 'Aditya Gaikwad',
     college: "AISSMS (All India Shri Shivaji Memorial Society's) College of Engineering",
-    image: 'https://randomuser.me/api/portraits/men/75.jpg',
+    image: adityaPhoto,
     linkedin: '#',
     github: '#',
   },
