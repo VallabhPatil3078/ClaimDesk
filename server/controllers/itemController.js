@@ -24,7 +24,19 @@ exports.addItem = async (req, res) => {
 // GET /api/items - Public
 exports.getAllItems = async (req, res) => {
   try {
-    const items = await Item.find().populate('user', 'name email');
+    const { status, location, date } = req.query;
+    const query = {};
+
+    if (status) query.status = status; // 'lost' or 'found'
+    if (location) query.location = location;
+    if (date) {
+      const start = new Date(date);
+      const end = new Date(date);
+      end.setHours(23, 59, 59, 999);
+      query.createdAt = { $gte: start, $lte: end };
+    }
+
+    const items = await Item.find(query).populate('user', 'name email');
     res.json(items);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch items' });
@@ -41,12 +53,17 @@ exports.getMyItems = async (req, res) => {
   }
 };
 
+// Delete Item
 exports.deleteItem = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
 
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
+    }
+
+    if (item.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to delete this item' });
     }
 
     await item.deleteOne(); // or item.remove()
@@ -57,3 +74,35 @@ exports.deleteItem = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete item', error: err.message });
   }
 };
+
+// Update item info
+exports.updateItem = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, location, status, imageUrl } = req.body;
+
+  try {
+    const item = await Item.findById(id);
+
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    // Only allow item owner or admin to update
+    if (item.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to update this item' });
+    }
+
+    item.title = title || item.title;
+    item.description = description || item.description;
+    item.location = location || item.location;
+    item.status = status || item.status;
+    item.imageUrl = imageUrl || item.imageUrl;
+
+    const updatedItem = await item.save();
+    res.json(updatedItem);
+
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update item', error: err.message });
+  }
+};
+
