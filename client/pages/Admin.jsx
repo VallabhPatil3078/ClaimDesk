@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 function Admin() {
   const [selectedView, setSelectedView] = useState("users");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [users, setUsers] = useState([
     { id: 1, name: "Tejas Sawant", email: "tejas@example.com" },
@@ -33,11 +32,13 @@ function Admin() {
   ]);
 
   const deleteUser = (id) => setUsers(users.filter((user) => user.id !== id));
-  const deleteLostItem = (id) => setLostItems(lostItems.filter((item) => item.id !== id));
-  const deleteFoundItem = (id) => setFoundItems(foundItems.filter((item) => item.id !== id));
+  const deleteLostItem = (id) =>
+    setLostItems(lostItems.filter((item) => item.id !== id));
+  const deleteFoundItem = (id) =>
+    setFoundItems(foundItems.filter((item) => item.id !== id));
 
   const renderTable = (items, deleteFunc) => (
-    <div className="overflow-auto rounded-lg shadow bg-white">
+    <div className="overflow-x-auto rounded-lg shadow bg-white">
       <table className="min-w-full text-sm">
         <thead className="bg-gray-100 text-gray-700">
           <tr>
@@ -83,7 +84,7 @@ function Admin() {
       return (
         <div>
           <h2 className="text-xl font-semibold mb-4">All Users</h2>
-          <div className="overflow-auto rounded-lg shadow bg-white">
+          <div className="overflow-x-auto rounded-lg shadow bg-white">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-100 text-gray-700">
                 <tr>
@@ -137,55 +138,49 @@ function Admin() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-
       <div className="flex flex-grow">
         {/* Sidebar */}
-        <aside className="w-64 bg-white shadow-lg p-4">
+        <aside
+          className={`bg-white shadow-lg p-4 fixed inset-y-0 left-0 transform ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } transition-transform duration-200 ease-in-out w-64 md:static md:translate-x-0`}
+        >
           <h2 className="text-lg font-bold mb-6">Admin Menu</h2>
           <ul className="space-y-4">
-            <li>
-              <button
-                className={`w-full text-left px-4 py-2 rounded ${
-                  selectedView === "users"
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-                onClick={() => setSelectedView("users")}
-              >
-                View Users
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left px-4 py-2 rounded ${
-                  selectedView === "lost"
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-                onClick={() => setSelectedView("lost")}
-              >
-                View Lost Items
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left px-4 py-2 rounded ${
-                  selectedView === "found"
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-                onClick={() => setSelectedView("found")}
-              >
-                View Found Items
-              </button>
-            </li>
+            {["users", "lost", "found"].map((view) => (
+              <li key={view}>
+                <button
+                  className={`w-full text-left px-4 py-2 rounded ${
+                    selectedView === view
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
+                  }`}
+                  onClick={() => {
+                    setSelectedView(view);
+                    setSidebarOpen(false);
+                  }}
+                >
+                  View {view.charAt(0).toUpperCase() + view.slice(1)}{" "}
+                  {view === "users" ? "Users" : "Items"}
+                </button>
+              </li>
+            ))}
           </ul>
         </aside>
 
-        {/* Main Content */}
-        <main className="flex-grow p-6 overflow-auto">{renderContent()}</main>
-      </div>
+        {/* Toggle button for mobile */}
+        <button
+          className="md:hidden fixed top-4 left-4 z-20 bg-blue-600 text-white px-3 py-2 rounded"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          Menu
+        </button>
 
+        {/* Main Content */}
+        <main className="flex-grow p-6 overflow-x-auto md:ml-64">
+          {renderContent()}
+        </main>
+      </div>
     </div>
   );
 }

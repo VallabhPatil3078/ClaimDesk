@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 function ReportLost() {
   const [formData, setFormData] = useState({
@@ -17,16 +15,10 @@ function ReportLost() {
 
     if (name === "photo") {
       const file = files[0];
-      setFormData((prev) => ({
-        ...prev,
-        photo: file,
-      }));
+      setFormData((prev) => ({ ...prev, photo: file }));
       setPhotoPreview(file ? URL.createObjectURL(file) : null);
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -50,13 +42,12 @@ function ReportLost() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-
-      <main className="flex-grow flex items-center justify-center pt-20 pb-16 px-4 sm:px-6">
+      <main className="flex-grow flex items-center justify-center pt-16 sm:pt-20 pb-12 px-4 sm:px-6">
         <form
           onSubmit={handleSubmit}
-          className="bg-white shadow-xl rounded-xl p-6 sm:p-8 w-full max-w-md space-y-5 sm:space-y-6"
+          className="bg-white shadow-xl rounded-xl p-5 sm:p-8 w-full max-w-sm sm:max-w-md md:max-w-lg space-y-4 sm:space-y-6"
         >
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-700">
+          <h2 className="text-xl sm:text-3xl font-bold text-center text-gray-700">
             Report Found Item
           </h2>
 
@@ -70,13 +61,13 @@ function ReportLost() {
               value={formData.itemName}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
-              Lost Location
+              Found Location
             </label>
             <input
               list="locationOptions"
@@ -86,7 +77,7 @@ function ReportLost() {
               onChange={handleChange}
               required
               placeholder="Search or select location"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <datalist id="locationOptions">
               <option value="PICT College Campus" />
@@ -110,7 +101,7 @@ function ReportLost() {
               onChange={handleChange}
               rows="3"
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
 
@@ -120,7 +111,7 @@ function ReportLost() {
             </label>
             <label
               htmlFor="photo"
-              className="cursor-pointer inline-block bg-blue-50 text-blue-700 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-blue-100"
+              className="cursor-pointer inline-block bg-blue-50 text-blue-700 font-semibold text-sm px-3 py-2 rounded-lg hover:bg-blue-100"
             >
               Upload Photo
             </label>
@@ -138,13 +129,13 @@ function ReportLost() {
                 <img
                   src={photoPreview}
                   alt="Preview"
-                  className="h-24 w-24 object-cover rounded-md border"
+                  className="h-20 w-20 sm:h-24 sm:w-24 object-cover rounded-md border"
                 />
               </div>
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               type="submit"
               className="w-full sm:w-1/2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
@@ -161,7 +152,6 @@ function ReportLost() {
           </div>
         </form>
       </main>
-
     </div>
   );
 }
