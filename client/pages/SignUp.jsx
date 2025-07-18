@@ -36,8 +36,12 @@ function SignUp() {
       // Use the login function from AuthContext to update global state and localStorage
       contextLogin(token, user);
 
-      // Navigate to the home page after successful signup (assuming auto-login)
-      navigate('/');
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+
       console.log(res.data.message || 'Signup successful!'); // Log success instead of alert
     } catch (err) {
       console.error('Signup failed:', err.response?.data?.message || err.message);

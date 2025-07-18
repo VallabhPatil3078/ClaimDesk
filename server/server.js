@@ -2,11 +2,15 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const connectCloudinary = require('./config/cloudinary');
 
 const app = express();
 
 // Connect to MongoDB
 connectDB();
+
+// Cloud Storage
+connectCloudinary();
 
 // Middleware
 app.use(cors());
