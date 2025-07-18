@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 function Admin() {
   const [selectedView, setSelectedView] = useState("users");
@@ -18,6 +16,7 @@ function Admin() {
       description: "Lost my wallet near the bookshelf.",
       photo: "https://via.placeholder.com/80x80?text=Wallet",
       user: "Tejas Sawant",
+      status: "pending", // <-- Added
     },
   ]);
 
@@ -29,54 +28,27 @@ function Admin() {
       description: "Found red bottle on the table.",
       photo: "https://via.placeholder.com/80x80?text=Bottle",
       user: "Vallabh Patil",
+      status: "pending", // <-- Added
     },
   ]);
 
   const deleteUser = (id) => setUsers(users.filter((user) => user.id !== id));
-  const deleteLostItem = (id) => setLostItems(lostItems.filter((item) => item.id !== id));
-  const deleteFoundItem = (id) => setFoundItems(foundItems.filter((item) => item.id !== id));
 
-  const renderTable = (items, deleteFunc) => (
-    <div className="overflow-auto rounded-lg shadow bg-white">
-      <table className="min-w-full text-sm">
-        <thead className="bg-gray-100 text-gray-700">
-          <tr>
-            <th className="p-3 text-left">Item</th>
-            <th className="p-3 text-left">Location</th>
-            <th className="p-3 text-left">Description</th>
-            <th className="p-3 text-left">Photo</th>
-            <th className="p-3 text-left">User</th>
-            <th className="p-3 text-left">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.id} className="border-b hover:bg-gray-50">
-              <td className="p-3">{item.itemName}</td>
-              <td className="p-3">{item.location}</td>
-              <td className="p-3">{item.description}</td>
-              <td className="p-3">
-                <img
-                  src={item.photo}
-                  alt="Item"
-                  className="h-16 w-16 object-cover rounded-md border"
-                />
-              </td>
-              <td className="p-3">{item.user}</td>
-              <td className="p-3">
-                <button
-                  onClick={() => deleteFunc(item.id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  const markLostItemAsReturned = (id) => {
+    setLostItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, status: "returned" } : item
+      )
+    );
+  };
+
+  const markFoundItemAsReturned = (id) => {
+    setFoundItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, status: "returned" } : item
+      )
+    );
+  };
 
   const renderContent = () => {
     if (selectedView === "users") {
@@ -118,7 +90,7 @@ function Admin() {
       return (
         <div>
           <h2 className="text-xl font-semibold mb-4">Lost Items</h2>
-          {renderTable(lostItems, deleteLostItem)}
+          {renderItemsTable(lostItems, markLostItemAsReturned)}
         </div>
       );
     }
@@ -127,7 +99,7 @@ function Admin() {
       return (
         <div>
           <h2 className="text-xl font-semibold mb-4">Found Items</h2>
-          {renderTable(foundItems, deleteFoundItem)}
+          {renderItemsTable(foundItems, markFoundItemAsReturned)}
         </div>
       );
     }
@@ -135,9 +107,62 @@ function Admin() {
     return null;
   };
 
+  const renderItemsTable = (items, markReturnedFunc) => (
+    <div className="overflow-auto rounded-lg shadow bg-white">
+      <table className="min-w-full text-sm">
+        <thead className="bg-gray-100 text-gray-700">
+          <tr>
+            <th className="p-3 text-left">Item</th>
+            <th className="p-3 text-left">Location</th>
+            <th className="p-3 text-left">Description</th>
+            <th className="p-3 text-left">Photo</th>
+            <th className="p-3 text-left">User</th>
+            <th className="p-3 text-left">Status</th>
+            <th className="p-3 text-left">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item) => (
+            <tr key={item.id} className="border-b hover:bg-gray-50">
+              <td className="p-3">{item.itemName}</td>
+              <td className="p-3">{item.location}</td>
+              <td className="p-3">{item.description}</td>
+              <td className="p-3">
+                <img
+                  src={item.photo}
+                  alt="Item"
+                  className="h-16 w-16 object-cover rounded-md border"
+                />
+              </td>
+              <td className="p-3">{item.user}</td>
+              <td className="p-3">
+                {item.status === "returned" ? (
+                  <span className="text-green-600 font-semibold">
+                    Returned to Owner
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => markReturnedFunc(item.id)}
+                    className="bg-gray-300 text-black px-3 py-1 rounded hover:bg-gray-400"
+                  >
+                    Pending
+                  </button>
+                )}
+              </td>
+              <td className="p-3">
+                <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-
       <div className="flex flex-grow">
         {/* Sidebar */}
         <aside className="w-64 bg-white shadow-lg p-4">
@@ -185,7 +210,6 @@ function Admin() {
         {/* Main Content */}
         <main className="flex-grow p-6 overflow-auto">{renderContent()}</main>
       </div>
-
     </div>
   );
 }
