@@ -1,17 +1,47 @@
+const cloudinary = require('cloudinary').v2;
 const Item = require('../models/Items');
 
 // POST /api/items - Add new item
 exports.addItem = async (req, res) => {
-  const { title, description, location, status, imageUrl } = req.body;
+  const { title, description, location, status } = req.body;
+  let imageUrl = null;
 
   try {
+    if (req.file) {
+      // Upload image buffer to Cloudinary
+      const result = await cloudinary.uploader.upload_stream(
+        { folder: 'lostfound' }, // optional: put images in a folder
+        (error, result) => {
+          if (error) throw error;
+          imageUrl = result.secure_url; // get image URL
+        }
+      );
+
+      // This won't work because upload_stream uses callback — need to wrap in promise
+    }
+
+    // Because upload_stream uses callback, we need to promisify it:
+
+    if (req.file) {
+      imageUrl = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'lostfound' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result.secure_url);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+    }
+
     const item = new Item({
       title,
       description,
       location,
       status,
       imageUrl,
-      user: req.user.id  // Set by JWT middleware
+      user: req.user.id,
     });
 
     const savedItem = await item.save();

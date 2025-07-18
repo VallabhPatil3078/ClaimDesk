@@ -16,7 +16,10 @@ const itemSchema = new mongoose.Schema({
     enum: ['lost', 'found'],
     default: 'lost',
   },
-  imageUrl: String,
+  imageUrl: {
+    type: String,
+    required: true
+  },
   date: {
     type: Date,
     default: Date.now,

@@ -43,7 +43,7 @@ function Navbar() {
           {user ? ( // Conditionally render based on user login status
             <>
               {/* User Profile Link */}
-              <NavLink to="/user" className={linkClasses}>
+              <NavLink to={user.role === 'admin' ? '/admin' : '/user'} className={linkClasses}>
                 <div className="flex items-center space-x-1">
                   <UserCircle size={20} /> {/* User profile icon */}
                   <span>{user.username || 'Profile'}</span> {/* Display username or 'Profile' */}

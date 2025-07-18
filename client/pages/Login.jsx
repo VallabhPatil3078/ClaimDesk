@@ -21,8 +21,11 @@ function Login() {
       // Use the login function from AuthContext to update global state and localStorage
       contextLogin(token, user);
 
-      // Navigate to the home page after successful login
-      navigate('/');
+      if (user.role === 'admin') {
+        navigate('/admin'); // Admin Page
+      } else {
+        navigate('/'); // Normal users
+      }
       console.log('Login successful!'); // Log success instead of alert
     } catch (err) {
       console.error('Login failed:', err.response?.data?.message || err.message);
