@@ -20,6 +20,7 @@ import User from './../pages/User';
 // Components
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import AuthSuccess from '../pages/AuthSuccess';
 
 function Layout({ children }) {
   const location = useLocation();
@@ -55,6 +56,7 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/user" element={<User />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/success" element={<AuthSuccess />} />
           </Routes>
         </Layout>
       </AuthProvider>

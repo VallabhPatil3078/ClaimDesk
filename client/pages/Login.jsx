@@ -91,19 +91,30 @@ function Login() {
 
               {/* Social Buttons */}
               <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-                {['google', 'facebook', 'apple'].map((provider) => (
-                  <a
-                    key={provider}
-                    href="#"
-                    className="flex items-center gap-2 px-3 sm:px-4 py-2 border rounded-md hover:bg-gray-100 transition"
-                  >
-                    <img src={`/assets/${provider}.svg`} alt={provider} className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-xs sm:text-sm capitalize">
-                      {provider === 'apple' ? 'Apple ID' : provider}
-                    </span>
-                  </a>
-                ))}
+                <a
+                  href="http://localhost:5000/api/auth/google"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 border rounded-md hover:bg-gray-100 transition"
+                >
+                  <img src="/assets/google.svg" alt="Google" className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-xs sm:text-sm">Google</span>
+                </a>
+                <a
+                  href="http://localhost:5000/api/auth/facebook"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 border rounded-md hover:bg-gray-100 transition"
+                >
+                  <img src="/assets/facebook.svg" alt="Facebook" className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-xs sm:text-sm">Facebook</span>
+                </a>
+                <a
+                  href="#"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 border rounded-md hover:bg-gray-100 transition"
+                >
+                  <img src="/assets/apple.svg" alt="Apple" className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-xs sm:text-sm">Coming Soon</span>
+                </a>
               </div>
+
+
             </form>
           </div>
         </div>
