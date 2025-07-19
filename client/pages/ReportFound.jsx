@@ -16,6 +16,12 @@ function ReportFound() {
   const { authToken } = useAuth();
   const navigate = useNavigate();
 
+  // Capitalize first letter of every word
+  const capitalizeInput = (value) =>
+    value
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -24,7 +30,10 @@ function ReportFound() {
       setFormData((prev) => ({ ...prev, photo: file }));
       setPhotoPreview(file ? URL.createObjectURL(file) : null);
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({
+        ...prev,
+        [name]: capitalizeInput(value),
+      }));
     }
   };
 
@@ -40,36 +49,37 @@ function ReportFound() {
   };
 
   const handleSubmit = async (e) => {
-      e.preventDefault();
-  
-      const data = new FormData();
-      data.append('title', formData.itemName);
-      data.append('location', formData.location);
-      data.append('description', formData.description);
-      data.append('status', 'found'); // assuming status needed for lost/found
-      if (formData.photo) data.append('photo', formData.photo);
-  
-      try {
-        await addFoundItem(data, authToken);
-        alert('Found item reported successfully!');
-        handleReset();
-        navigate('/found-item'); // or wherever you want to go next
-      } catch (error) {
-        alert(error.response?.data?.message || 'Failed to report found item');
-      }
-    };
+    e.preventDefault();
+
+    const data = new FormData();
+    data.append('title', formData.itemName);
+    data.append('location', formData.location);
+    data.append('description', formData.description);
+    data.append('status', 'found');
+    if (formData.photo) data.append('photo', formData.photo);
+
+    try {
+      await addFoundItem(data, authToken);
+      alert('Found item reported successfully!');
+      handleReset();
+      navigate('/found-item');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to report found item');
+    }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 via-blue-50 to-white">
       <main className="flex-grow flex items-center justify-center pt-16 sm:pt-20 pb-12 px-4 sm:px-6">
         <form
           onSubmit={handleSubmit}
-          className="bg-white shadow-xl rounded-xl p-5 sm:p-8 w-full max-w-sm sm:max-w-md md:max-w-lg space-y-4 sm:space-y-6"
+          className="bg-white shadow-xl rounded-xl p-5 sm:p-8 w-full max-w-sm sm:max-w-md md:max-w-lg space-y-4 sm:space-y-6 border border-gray-200"
         >
-          <h2 className="text-xl sm:text-3xl font-bold text-center text-gray-700">
+          <h2 className="text-xl sm:text-3xl font-bold text-center text-gray-800">
             Report Found Item
           </h2>
 
+          {/* Item Name */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Item Name
@@ -84,6 +94,7 @@ function ReportFound() {
             />
           </div>
 
+          {/* Found Location */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Found Location
@@ -110,6 +121,7 @@ function ReportFound() {
             </datalist>
           </div>
 
+          {/* Description */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Description
@@ -124,6 +136,7 @@ function ReportFound() {
             />
           </div>
 
+          {/* Upload Photo */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Upload Photo
@@ -154,17 +167,18 @@ function ReportFound() {
             )}
           </div>
 
+          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               type="submit"
-              className="w-full sm:w-1/2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+              className="w-full sm:w-1/2 bg-blue-600 text-white py-2 rounded-lg shadow hover:scale-105 hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 active:scale-95 transition-all duration-200"
             >
               Submit
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="w-full sm:w-1/2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+              className="w-full sm:w-1/2 bg-red-500 text-white py-2 rounded-lg shadow hover:scale-105 hover:bg-red-600 focus:ring-2 focus:ring-red-400 active:scale-95 transition-all duration-200"
             >
               Reset
             </button>

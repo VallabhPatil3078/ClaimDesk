@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import ItemCard from '../components/ItemCard';
-import { fetchLostItems } from '../src/api/api'; // Make sure this is defined in your api.js
+import { fetchLostItems } from '../src/api/api';
 
 function LostItem() {
   const navigate = useNavigate();
@@ -25,7 +25,6 @@ function LostItem() {
       const res = await fetchLostItems(params);
       let items = res.data;
 
-      // Apply searchTerm filter client-side
       if (searchTerm) {
         items = items.filter(item =>
           item.title.toLowerCase().includes(searchTerm.toLowerCase().trim())
@@ -45,24 +44,24 @@ function LostItem() {
   }, [searchTerm, filterDate, filterLocation]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#e6eff8]">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 via-blue-50 to-white">
       <main className="flex-grow pt-12 sm:pt-16 pb-10 sm:pb-12 px-4 sm:px-6">
-        <h1 className="text-2xl sm:text-4xl font-bold text-center mb-8 sm:mb-10 text-[#1e293b]">
+        <h1 className="text-2xl sm:text-4xl font-bold text-center mb-8 sm:mb-10 text-gray-800 drop-shadow">
           Lost Items
         </h1>
 
         {/* Search, filters, and button */}
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-stretch justify-center gap-3 sm:gap-4 mb-10 sm:mb-12">
-          {/* Search bar (by item name) */}
+          {/* Search by name */}
           <div className="relative w-full lg:w-1/4">
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by item name..."
-              className="w-full py-2 sm:py-3 px-3 sm:px-4 pr-10 sm:pr-12 rounded-md border border-[#cbd5e1] shadow-sm bg-white text-[#1e293b] placeholder-[#64748b] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+              className="w-full py-2 sm:py-3 px-3 sm:px-4 pr-10 rounded-xl border border-gray-300 shadow-sm bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
             />
-            <FiSearch className="absolute top-1/2 right-3 sm:right-4 transform -translate-y-1/2 text-[#64748b] text-lg sm:text-xl" />
+            <FiSearch className="absolute top-1/2 right-3 sm:right-4 transform -translate-y-1/2 text-gray-500 text-lg sm:text-xl" />
           </div>
 
           {/* Filter by Date */}
@@ -70,7 +69,7 @@ function LostItem() {
             type="date"
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
-            className="w-full lg:w-1/4 py-2 sm:py-3 px-3 sm:px-4 rounded-md border border-[#cbd5e1] shadow-sm bg-white text-[#1e293b] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+            className="w-full lg:w-1/4 py-2 sm:py-3 px-3 sm:px-4 rounded-xl border border-gray-300 shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
           />
 
           {/* Filter by Location */}
@@ -79,24 +78,24 @@ function LostItem() {
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
             placeholder="Filter by location..."
-            className="w-full lg:w-1/4 py-2 sm:py-3 px-3 sm:px-4 rounded-md border border-[#cbd5e1] shadow-sm bg-white text-[#1e293b] placeholder-[#64748b] focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+            className="w-full lg:w-1/4 py-2 sm:py-3 px-3 sm:px-4 rounded-xl border border-gray-300 shadow-sm bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
           />
 
           {/* Report Lost Item button */}
           <button
             onClick={() => navigate('/report-lost')}
-            className="w-full lg:w-1/4 bg-red-600 text-white py-2 sm:py-3 rounded-md shadow hover:bg-red-700 transition duration-200"
+            className="w-full lg:w-1/4 bg-red-600 text-white py-2 sm:py-3 rounded-xl shadow hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition duration-200 transform hover:-translate-y-1 hover:shadow-lg"
           >
             Report Lost Item
           </button>
         </div>
 
-        {/* Item cards grid */}
+        {/* Items grid */}
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {loading ? (
-            <p className="text-center col-span-full text-[#64748b]">Loading...</p>
+            <p className="text-center col-span-full text-gray-500">Loading...</p>
           ) : lostItems.length === 0 ? (
-            <p className="text-center col-span-full text-[#64748b]">No lost items found.</p>
+            <p className="text-center col-span-full text-gray-500">No lost items found.</p>
           ) : (
             lostItems.map((item) => (
               <ItemCard key={item._id} item={item} type="lost" />

@@ -1,4 +1,3 @@
-// User.jsx
 import React, { useState, useEffect } from "react";
 import { getMyItems } from "../src/api/api";
 
@@ -18,11 +17,8 @@ function User() {
         const res = await getMyItems(token);
         const myItems = res.data;
 
-        const lost = myItems.filter((item) => item.status === "lost");
-        const found = myItems.filter((item) => item.status === "found");
-
-        setLostItems(lost);
-        setFoundItems(found);
+        setLostItems(myItems.filter((item) => item.status === "lost"));
+        setFoundItems(myItems.filter((item) => item.status === "found"));
       } catch (err) {
         console.error("Failed to fetch items:", err);
       } finally {
@@ -42,9 +38,9 @@ function User() {
   };
 
   const renderTable = (items, type) => (
-    <div className="overflow-x-auto rounded-lg shadow bg-white mt-6">
-      <table className="min-w-full text-sm">
-        <thead className="bg-gray-100 text-gray-700">
+    <div className="overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200">
+      <table className="min-w-full text-sm sm:text-base">
+        <thead className="bg-blue-100 text-gray-800">
           <tr>
             <th className="p-3 text-left">Item</th>
             <th className="p-3 text-left">Location</th>
@@ -63,28 +59,28 @@ function User() {
             </tr>
           ) : (
             items.map((item) => (
-              <tr key={item._id} className="border-b hover:bg-gray-50">
-                <td className="p-3">{item.title}</td>
-                <td className="p-3">{item.location}</td>
-                <td className="p-3">{item.description}</td>
+              <tr key={item._id} className="border-b hover:bg-blue-50 transition">
+                <td className="p-3 font-medium text-gray-700">{item.title}</td>
+                <td className="p-3 text-gray-600">{item.location}</td>
+                <td className="p-3 text-gray-500">{item.description}</td>
                 <td className="p-3">
                   <img
                     src={item.image || "https://via.placeholder.com/80x80?text=No+Image"}
                     alt="Item"
-                    className="h-16 w-16 object-cover rounded-md border"
+                    className="h-16 w-16 object-cover rounded-lg border"
                   />
                 </td>
-                <td className="p-3 capitalize">{item.status}</td>
+                <td className="p-3 capitalize text-gray-700">{item.status}</td>
                 <td className="p-3 flex flex-wrap gap-2">
                   <button
                     onClick={() => alert(`Edit ${item.title}`)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteItem(item._id, type)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                   >
                     Delete
                   </button>
@@ -98,82 +94,59 @@ function User() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-blue-50">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-b from-blue-50 via-white to-blue-50">
       {/* Sidebar for desktop */}
-      <aside className="hidden md:block w-64 bg-white shadow-lg p-4">
-        <h2 className="text-lg font-bold mb-6">My Items Menu</h2>
+      <aside className="hidden md:block w-64 bg-white shadow-lg p-5 border-r border-gray-200">
+        <h2 className="text-xl font-bold mb-6 text-gray-800">My Items Menu</h2>
         <ul className="space-y-4">
-          <li>
-            <button
-              className={`w-full text-left px-4 py-2 rounded ${
-                selectedView === "lost"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-200"
-              }`}
-              onClick={() => setSelectedView("lost")}
-            >
-              Lost Items
-            </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left px-4 py-2 rounded ${
-                selectedView === "found"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-200"
-              }`}
-              onClick={() => setSelectedView("found")}
-            >
-              Found Items
-            </button>
-          </li>
+          {["lost", "found"].map((view) => (
+            <li key={view}>
+              <button
+                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
+                  selectedView === view
+                    ? "bg-blue-600 text-white shadow"
+                    : "hover:bg-blue-50 text-gray-700"
+                }`}
+                onClick={() => setSelectedView(view)}
+              >
+                {view.charAt(0).toUpperCase() + view.slice(1)} Items
+              </button>
+            </li>
+          ))}
         </ul>
       </aside>
 
       {/* Sidebar for mobile */}
       <aside
-        className={`md:hidden fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg p-4 z-20 transform transition-transform duration-200 ease-in-out ${
+        className={`md:hidden fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg p-5 border-r border-gray-200 z-20 transform transition-transform duration-200 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <h2 className="text-lg font-bold mb-6">My Items Menu</h2>
+        <h2 className="text-xl font-bold mb-6 text-gray-800">My Items Menu</h2>
         <ul className="space-y-4">
-          <li>
-            <button
-              className={`w-full text-left px-4 py-2 rounded ${
-                selectedView === "lost"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-200"
-              }`}
-              onClick={() => {
-                setSelectedView("lost");
-                setSidebarOpen(false);
-              }}
-            >
-              Lost Items
-            </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left px-4 py-2 rounded ${
-                selectedView === "found"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-200"
-              }`}
-              onClick={() => {
-                setSelectedView("found");
-                setSidebarOpen(false);
-              }}
-            >
-              Found Items
-            </button>
-          </li>
+          {["lost", "found"].map((view) => (
+            <li key={view}>
+              <button
+                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
+                  selectedView === view
+                    ? "bg-blue-600 text-white shadow"
+                    : "hover:bg-blue-50 text-gray-700"
+                }`}
+                onClick={() => {
+                  setSelectedView(view);
+                  setSidebarOpen(false);
+                }}
+              >
+                {view.charAt(0).toUpperCase() + view.slice(1)} Items
+              </button>
+            </li>
+          ))}
         </ul>
       </aside>
 
-      {/* Mobile menu toggle button */}
+      {/* Toggle button for mobile */}
       <button
-        className="md:hidden fixed top-20 left-4 z-30 bg-blue-600 text-white px-3 py-2 rounded"
+        className="md:hidden fixed top-20 left-4 z-30 bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
         Menu
@@ -185,7 +158,7 @@ function User() {
           {selectedView === "lost" ? "Lost Items" : "Found Items"}
         </h1>
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <p className="text-center text-gray-600">Loading...</p>
         ) : selectedView === "lost" ? (
           renderTable(lostItems, "lost")
         ) : (
@@ -197,4 +170,3 @@ function User() {
 }
 
 export default User;
-

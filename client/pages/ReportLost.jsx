@@ -16,20 +16,27 @@ function ReportLost() {
   const { authToken } = useAuth();
   const navigate = useNavigate();
 
+  // Capitalize first letter and proper nouns
+  const capitalizeInput = (text) =>
+    text
+      .split(" ")
+      .map(
+        (word) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      )
+      .join(" ");
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (name === "photo") {
       const file = files[0];
-      setFormData((prev) => ({
-        ...prev,
-        photo: file,
-      }));
+      setFormData((prev) => ({ ...prev, photo: file }));
       setPhotoPreview(file ? URL.createObjectURL(file) : null);
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: value,
+        [name]: capitalizeInput(value),
       }));
     }
   };
@@ -49,33 +56,34 @@ function ReportLost() {
     e.preventDefault();
 
     const data = new FormData();
-    data.append('title', formData.itemName);
-    data.append('location', formData.location);
-    data.append('description', formData.description);
-    data.append('status', 'lost'); // assuming status needed for lost/found
-    if (formData.photo) data.append('photo', formData.photo);
+    data.append("title", formData.itemName);
+    data.append("location", formData.location);
+    data.append("description", formData.description);
+    data.append("status", "lost");
+    if (formData.photo) data.append("photo", formData.photo);
 
     try {
       await addLostItem(data, authToken);
-      alert('Lost item reported successfully!');
+      alert("Lost item reported successfully!");
       handleReset();
-      navigate('/lost-item'); // or wherever you want to go next
+      navigate("/lost-item");
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to report lost item');
+      alert(error.response?.data?.message || "Failed to report lost item");
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 via-blue-50 to-white">
       <main className="flex-grow flex items-center justify-center pt-16 sm:pt-20 pb-12 px-4 sm:px-6">
         <form
           onSubmit={handleSubmit}
           className="bg-white shadow-xl rounded-xl p-5 sm:p-8 w-full max-w-sm sm:max-w-md md:max-w-lg space-y-4 sm:space-y-6"
         >
-          <h2 className="text-xl sm:text-3xl font-bold text-center text-gray-700">
+          <h2 className="text-xl sm:text-3xl font-bold text-center text-gray-700 drop-shadow">
             Report Lost Item
           </h2>
 
+          {/* Item Name */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Item Name
@@ -86,10 +94,11 @@ function ReportLost() {
               value={formData.itemName}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
           </div>
 
+          {/* Lost Location */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Lost Location
@@ -102,7 +111,7 @@ function ReportLost() {
               onChange={handleChange}
               required
               placeholder="Search or select location"
-              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
             <datalist id="locationOptions">
               <option value="PICT College Campus" />
@@ -116,6 +125,7 @@ function ReportLost() {
             </datalist>
           </div>
 
+          {/* Description */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Description
@@ -126,17 +136,18 @@ function ReportLost() {
               onChange={handleChange}
               rows="3"
               required
-              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none transition"
             />
           </div>
 
+          {/* Upload Photo */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Upload Photo
             </label>
             <label
               htmlFor="photo"
-              className="cursor-pointer inline-block bg-blue-50 text-blue-700 font-semibold text-sm px-3 py-2 rounded-lg hover:bg-blue-100"
+              className="cursor-pointer inline-block bg-blue-50 text-blue-700 font-semibold text-sm px-3 py-2 rounded-lg hover:bg-blue-100 transition"
             >
               Upload Photo
             </label>
@@ -160,17 +171,18 @@ function ReportLost() {
             )}
           </div>
 
+          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               type="submit"
-              className="w-full sm:w-1/2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+              className="w-full sm:w-1/2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 transition transform hover:-translate-y-1 hover:shadow-md"
             >
               Submit
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="w-full sm:w-1/2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+              className="w-full sm:w-1/2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-400 transition transform hover:-translate-y-1 hover:shadow-md"
             >
               Reset
             </button>
