@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useAuth } from '../src/context/AuthContext';
+import { addFoundItem } from '../src/api/api';
+import { useNavigate } from 'react-router-dom';
 
 function ReportFound() {
   const [formData, setFormData] = useState({
@@ -9,6 +12,9 @@ function ReportFound() {
   });
 
   const [photoPreview, setPhotoPreview] = useState(null);
+
+  const { authToken } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -33,12 +39,25 @@ function ReportFound() {
     document.getElementById("photo").value = null;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Lost Item Data:", formData);
-    alert("Lost item submitted successfully!");
-    handleReset();
-  };
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+  
+      const data = new FormData();
+      data.append('title', formData.itemName);
+      data.append('location', formData.location);
+      data.append('description', formData.description);
+      data.append('status', 'found'); // assuming status needed for lost/found
+      if (formData.photo) data.append('photo', formData.photo);
+  
+      try {
+        await addFoundItem(data, authToken);
+        alert('Found item reported successfully!');
+        handleReset();
+        navigate('/found-item'); // or wherever you want to go next
+      } catch (error) {
+        alert(error.response?.data?.message || 'Failed to report found item');
+      }
+    };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">

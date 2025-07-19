@@ -17,6 +17,15 @@ export const addLostItem = (itemData, token) => {
   });
 };
 
+export const addFoundItem = (itemData, token) => {
+  return API.post('/items', itemData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,  // send token here
+    },
+  });
+};
+
 export const getMyItems = (token) =>
   API.get('/items/my', {
     headers: {
@@ -24,4 +33,8 @@ export const getMyItems = (token) =>
     },
   });
 
+export const fetchLostItems = (params) => API.get('/items', { params });
+
+export const fetchItems = (filters) =>
+  API.get('/items', { params: filters });
 

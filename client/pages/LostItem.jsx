@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import ItemCard from '../components/ItemCard';
+import { fetchLostItems } from '../src/api/api'; // Make sure this is defined in your api.js
 
 function LostItem() {
   const navigate = useNavigate();
@@ -9,20 +10,39 @@ function LostItem() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState('');
   const [filterLocation, setFilterLocation] = useState('');
+  const [lostItems, setLostItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const lostItems = [
-    { id: 1, title: 'Black Wallet', description: 'Lost near the cafeteria', date: '2025-07-13', location: 'Cafeteria' },
-    { id: 2, title: 'iPhone 13', description: 'Left in the library, 2nd floor', date: '2025-07-10', location: 'Library' },
-    { id: 3, title: 'Backpack', description: 'Blue Nike backpack at bus stop', date: '2025-07-09', location: 'Bus Stop' },
-    { id: 4, title: 'Keychain', description: 'Lost in parking lot near Block C', date: '2025-07-08', location: 'Parking Lot' },
-  ];
+  const loadItems = async () => {
+    try {
+      setLoading(true);
+      const params = {
+        status: 'lost',
+        ...(filterLocation && { location: filterLocation }),
+        ...(filterDate && { date: filterDate }),
+      };
 
-  const filteredItems = lostItems.filter((item) => {
-    const matchesName = !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase().trim());
-    const matchesDate = !filterDate || item.date === filterDate;
-    const matchesLocation = !filterLocation || item.location.toLowerCase().includes(filterLocation.toLowerCase().trim());
-    return matchesName && matchesDate && matchesLocation;
-  });
+      const res = await fetchLostItems(params);
+      let items = res.data;
+
+      // Apply searchTerm filter client-side
+      if (searchTerm) {
+        items = items.filter(item =>
+          item.title.toLowerCase().includes(searchTerm.toLowerCase().trim())
+        );
+      }
+
+      setLostItems(items);
+    } catch (error) {
+      console.error('Failed to fetch lost items:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadItems();
+  }, [searchTerm, filterDate, filterLocation]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#e6eff8]">
@@ -73,9 +93,15 @@ function LostItem() {
 
         {/* Item cards grid */}
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredItems.map((item) => (
-            <ItemCard key={item.id} item={item} type="lost" />
-          ))}
+          {loading ? (
+            <p className="text-center col-span-full text-[#64748b]">Loading...</p>
+          ) : lostItems.length === 0 ? (
+            <p className="text-center col-span-full text-[#64748b]">No lost items found.</p>
+          ) : (
+            lostItems.map((item) => (
+              <ItemCard key={item._id} item={item} type="lost" />
+            ))
+          )}
         </div>
       </main>
     </div>
