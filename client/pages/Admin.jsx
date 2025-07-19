@@ -1,9 +1,9 @@
+// Admin.jsx
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 function Admin() {
   const [selectedView, setSelectedView] = useState("users");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [users, setUsers] = useState([
     { id: 1, name: "Tejas Sawant", email: "tejas@example.com" },
@@ -41,15 +41,11 @@ function Admin() {
   const markAsReturned = (id, isLost) => {
     if (isLost) {
       setLostItems((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, status: "returned" } : item
-        )
+        prev.map((item) => (item.id === id ? { ...item, status: "returned" } : item))
       );
     } else {
       setFoundItems((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, status: "returned" } : item
-        )
+        prev.map((item) => (item.id === id ? { ...item, status: "returned" } : item))
       );
     }
   };
@@ -84,9 +80,7 @@ function Admin() {
               <td className="p-3">{item.user}</td>
               <td className="p-3">
                 {item.status === "returned" ? (
-                  <span className="text-green-600 font-semibold">
-                    Returned to Owner
-                  </span>
+                  <span className="text-green-600 font-semibold">Returned to Owner</span>
                 ) : (
                   <button
                     onClick={() => markAsReturned(item.id, isLost)}
@@ -171,50 +165,68 @@ function Admin() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <div className="flex flex-grow">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white shadow-lg p-4">
+        {/* Sidebar for large devices */}
+        <aside className="hidden md:block w-64 bg-white shadow-lg p-4">
           <h2 className="text-lg font-bold mb-6">Admin Menu</h2>
           <ul className="space-y-4">
-            <li>
-              <button
-                className={`w-full text-left px-4 py-2 rounded ${
-                  selectedView === "users"
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-                onClick={() => setSelectedView("users")}
-              >
-                View Users
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left px-4 py-2 rounded ${
-                  selectedView === "lost"
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-                onClick={() => setSelectedView("lost")}
-              >
-                View Lost Items
-              </button>
-            </li>
-            <li>
-              <button
-                className={`w-full text-left px-4 py-2 rounded ${
-                  selectedView === "found"
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-                onClick={() => setSelectedView("found")}
-              >
-                View Found Items
-              </button>
-            </li>
+            {["users", "lost", "found"].map((view) => (
+              <li key={view}>
+                <button
+                  className={`w-full text-left px-4 py-2 rounded ${
+                    selectedView === view
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
+                  }`}
+                  onClick={() => setSelectedView(view)}
+                >
+                  {view === "users"
+                    ? "View Users"
+                    : `View ${view.charAt(0).toUpperCase() + view.slice(1)} Items`}
+                </button>
+              </li>
+            ))}
           </ul>
         </aside>
 
-        {/* Main Content */}
+        {/* Sidebar for mobile */}
+        <aside
+          className={`md:hidden fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg p-4 z-20 transform transition-transform duration-200 ease-in-out ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <h2 className="text-lg font-bold mb-6">Admin Menu</h2>
+          <ul className="space-y-4">
+            {["users", "lost", "found"].map((view) => (
+              <li key={view}>
+                <button
+                  className={`w-full text-left px-4 py-2 rounded ${
+                    selectedView === view
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-200"
+                  }`}
+                  onClick={() => {
+                    setSelectedView(view);
+                    setSidebarOpen(false);
+                  }}
+                >
+                  {view === "users"
+                    ? "View Users"
+                    : `View ${view.charAt(0).toUpperCase() + view.slice(1)} Items`}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        {/* Mobile menu toggle */}
+        <button
+          className="md:hidden fixed top-20 left-4 z-30 bg-blue-600 text-white px-3 py-2 rounded"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          Menu
+        </button>
+
+        {/* Main content */}
         <main className="flex-grow p-6 overflow-auto">{renderContent()}</main>
       </div>
     </div>
