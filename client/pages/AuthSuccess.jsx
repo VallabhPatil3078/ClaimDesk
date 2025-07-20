@@ -15,6 +15,7 @@ const AuthSuccess = () => {
     if (token && userJson) {
       const user = JSON.parse(decodeURIComponent(userJson));
       login(token, user);
+      localStorage.setItem("token", token);
       navigate(user.role === 'admin' ? '/admin' : '/');
     } else {
       navigate('/login');

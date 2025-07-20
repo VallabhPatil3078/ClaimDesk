@@ -46,3 +46,17 @@ export const fetchLostItems = (params) => API.get('/items', { params });
 export const fetchItems = (filters) =>
   API.get('/items', { params: filters });
 
+
+export const getAllUsers = (token) =>
+  API.get('/users', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const deleteUser = (id, token) =>
+  API.delete(`/users/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

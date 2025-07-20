@@ -1,3 +1,5 @@
+// server/server.js
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -41,6 +43,7 @@ app.use(passport.session());
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/items', require('./routes/items'));
+app.use('/api/users', require('./routes/users'));
 
 // Email notification endpoint
 app.post('/api/notify-owner', async (req, res) => {
