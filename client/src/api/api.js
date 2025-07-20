@@ -34,6 +34,13 @@ export const getMyItems = (token) =>
     },
   });
 
+export const deleteItemAPI = (id, token) =>
+  API.delete(`/items/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 export const fetchLostItems = (params) => API.get('/items', { params });
 
 export const fetchItems = (filters) =>

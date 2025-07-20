@@ -1,5 +1,7 @@
+// client/pages/User.jsx
 import React, { useState, useEffect } from "react";
 import { getMyItems } from "../src/api/api";
+import { deleteItemAPI } from "../src/api/api";
 
 function User() {
   const [lostItems, setLostItems] = useState([]);
@@ -29,11 +31,23 @@ function User() {
     fetchItems();
   }, []);
 
-  const deleteItem = (id, type) => {
-    if (type === "lost") {
-      setLostItems(lostItems.filter((item) => item._id !== id));
-    } else {
-      setFoundItems(foundItems.filter((item) => item._id !== id));
+  const deleteItem = async (id, type) => {
+    const token = localStorage.getItem("authToken");
+
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
+    try {
+      await deleteItemAPI(id, token); // ✅ API call to backend
+
+      // ✅ Update local state after successful deletion
+      if (type === "lost") {
+        setLostItems((prev) => prev.filter((item) => item._id !== id));
+      } else {
+        setFoundItems((prev) => prev.filter((item) => item._id !== id));
+      }
+    } catch (err) {
+      console.error("Failed to delete item:", err);
+      alert("Failed to delete item.");
     }
   };
 
@@ -102,11 +116,10 @@ function User() {
           {["lost", "found"].map((view) => (
             <li key={view}>
               <button
-                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
-                  selectedView === view
+                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${selectedView === view
                     ? "bg-blue-600 text-white shadow"
                     : "hover:bg-blue-50 text-gray-700"
-                }`}
+                  }`}
                 onClick={() => setSelectedView(view)}
               >
                 {view.charAt(0).toUpperCase() + view.slice(1)} Items
@@ -118,20 +131,18 @@ function User() {
 
       {/* Sidebar for mobile */}
       <aside
-        className={`md:hidden fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg p-5 border-r border-gray-200 z-20 transform transition-transform duration-200 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`md:hidden fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg p-5 border-r border-gray-200 z-20 transform transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <h2 className="text-xl font-bold mb-6 text-gray-800">My Items Menu</h2>
         <ul className="space-y-4">
           {["lost", "found"].map((view) => (
             <li key={view}>
               <button
-                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
-                  selectedView === view
+                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${selectedView === view
                     ? "bg-blue-600 text-white shadow"
                     : "hover:bg-blue-50 text-gray-700"
-                }`}
+                  }`}
                 onClick={() => {
                   setSelectedView(view);
                   setSidebarOpen(false);
