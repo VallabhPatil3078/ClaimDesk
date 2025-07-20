@@ -65,7 +65,7 @@ function User() {
                 <td className="p-3 text-gray-500">{item.description}</td>
                 <td className="p-3">
                   <img
-                    src={item.image || "https://via.placeholder.com/80x80?text=No+Image"}
+                    src={item.imageUrl || "https://via.placeholder.com/80x80?text=No+Image"}
                     alt="Item"
                     className="h-16 w-16 object-cover rounded-lg border"
                   />

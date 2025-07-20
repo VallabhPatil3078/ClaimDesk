@@ -1,3 +1,5 @@
+// server/controllers/authController.js
+
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -20,21 +22,20 @@ exports.signup = async (req, res) => {
     const user = new User({ name, email, password: hashedPassword, role });
     await user.save();
 
-    res.status(201).json({ message: 'User created successfully' });
-    // ✅ Generate JWT token after successful signup
+    // Generate JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    // ✅ Return token and user info for frontend to auto-login
+    // Return token and user info
     res.status(201).json({
       message: 'User created successfully',
       token,
       user: {
         id: user._id,
-        username: user.name,
+        name: user.name,
         email: user.email,
         role: user.role,
       },
@@ -44,6 +45,7 @@ exports.signup = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // Login
 exports.login = async (req, res) => {
@@ -60,7 +62,7 @@ exports.login = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
+      { id: user._id, role: user.role },
       JWT_SECRET,
       { expiresIn: '1d' }
     );
