@@ -7,25 +7,11 @@ exports.addItem = async (req, res) => {
   let imageUrl = null;
 
   try {
-    if (req.file) {
-      // Upload image buffer to Cloudinary
-      const result = await cloudinary.uploader.upload_stream(
-        { folder: 'lostfound' }, // optional: put images in a folder
-        (error, result) => {
-          if (error) throw error;
-          imageUrl = result.secure_url; // get image URL
-        }
-      );
-
-      // This won't work because upload_stream uses callback — need to wrap in promise
-    }
-
-    // Because upload_stream uses callback, we need to promisify it:
-
+    // ✅ Only use the correct, promisified Cloudinary upload
     if (req.file) {
       imageUrl = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { folder: 'lostfound' },
+          { folder: 'lostfound', timeout: 20000 }, // optional: add timeout
           (error, result) => {
             if (error) return reject(error);
             resolve(result.secure_url);
@@ -47,6 +33,7 @@ exports.addItem = async (req, res) => {
     const savedItem = await item.save();
     res.status(201).json(savedItem);
   } catch (err) {
+    console.error('Add Item Error:', err); // helpful for debugging
     res.status(500).json({ message: 'Failed to add item', error: err.message });
   }
 };
@@ -83,7 +70,7 @@ exports.getMyItems = async (req, res) => {
   }
 };
 
-// Delete Item
+// DELETE /api/items/:id - Delete item
 exports.deleteItem = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
@@ -96,16 +83,16 @@ exports.deleteItem = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to delete this item' });
     }
 
-    await item.deleteOne(); // or item.remove()
+    await item.deleteOne();
 
     res.status(200).json({ message: 'Item deleted successfully' });
   } catch (err) {
-    console.error('Delete Error:', err); // 👈 log actual error
+    console.error('Delete Error:', err);
     res.status(500).json({ message: 'Failed to delete item', error: err.message });
   }
 };
 
-// Update item info
+// PUT /api/items/:id - Update item info
 exports.updateItem = async (req, res) => {
   const { id } = req.params;
   const { title, description, location, status, imageUrl } = req.body;
@@ -117,7 +104,6 @@ exports.updateItem = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    // Only allow item owner or admin to update
     if (item.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this item' });
     }
@@ -135,4 +121,3 @@ exports.updateItem = async (req, res) => {
     res.status(500).json({ message: 'Failed to update item', error: err.message });
   }
 };
-
