@@ -27,6 +27,8 @@ const protect = async (req, res, next) => {
         email: user.email
       };
 
+      console.log('Authenticated user:', req.user);
+
       next();
     } catch (err) {
       return res.status(401).json({ message: 'Not authorized, token failed' });
