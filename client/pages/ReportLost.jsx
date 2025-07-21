@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from '../src/context/AuthContext';
 import { addLostItem } from '../src/api/api';
 import { useNavigate } from 'react-router-dom';
+import LocationAutocomplete from "../components/LocationAutocomplete";
 
 function ReportLost() {
   const [formData, setFormData] = useState({
@@ -36,7 +37,7 @@ function ReportLost() {
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: capitalizeInput(value),
+        [name]: name === "location" ? value : capitalizeInput(value),
       }));
     }
   };
@@ -103,26 +104,12 @@ function ReportLost() {
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Lost Location
             </label>
-            <input
-              list="locationOptions"
-              type="text"
-              name="location"
+            <LocationAutocomplete
               value={formData.location}
-              onChange={handleChange}
-              required
-              placeholder="Search or select location"
-              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              onChange={(loc) =>
+                setFormData((prev) => ({ ...prev, location: loc }))
+              }
             />
-            <datalist id="locationOptions">
-              <option value="PICT College Campus" />
-              <option value="PICT Canteen" />
-              <option value="Library" />
-              <option value="Main Entrance" />
-              <option value="Computer Lab 1" />
-              <option value="Computer Lab 2" />
-              <option value="Auditorium" />
-              <option value="Parking Area" />
-            </datalist>
           </div>
 
           {/* Description */}

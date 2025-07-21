@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from '../src/context/AuthContext';
 import { addFoundItem } from '../src/api/api';
 import { useNavigate } from 'react-router-dom';
+import LocationAutocomplete from "../components/LocationAutocomplete";
 
 function ReportFound() {
   const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ function ReportFound() {
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: capitalizeInput(value),
+        [name]: name === "location" ? value : capitalizeInput(value),
       }));
     }
   };
@@ -99,26 +100,12 @@ function ReportFound() {
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Found Location
             </label>
-            <input
-              list="locationOptions"
-              type="text"
-              name="location"
+            <LocationAutocomplete
               value={formData.location}
-              onChange={handleChange}
-              required
-              placeholder="Search or select location"
-              className="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, location: val }))
+              }
             />
-            <datalist id="locationOptions">
-              <option value="PICT College Campus" />
-              <option value="PICT Canteen" />
-              <option value="Library" />
-              <option value="Main Entrance" />
-              <option value="Computer Lab 1" />
-              <option value="Computer Lab 2" />
-              <option value="Auditorium" />
-              <option value="Parking Area" />
-            </datalist>
           </div>
 
           {/* Description */}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateItemAPI, getItemById } from "../src/api/api";
+import LocationAutocomplete from "../components/LocationAutocomplete";
 
 function EditItem() {
   const { id } = useParams();
@@ -73,14 +74,14 @@ function EditItem() {
           placeholder="Item Name"
           className="w-full mb-3 p-2 border rounded"
         />
-        <input
-          type="text"
-          name="location"
-          value={formData.location}
-          onChange={handleChange}
-          placeholder="Location"
-          className="w-full mb-3 p-2 border rounded"
-        />
+        <div className="mb-3">
+          <LocationAutocomplete
+            value={formData.location}
+            onChange={(val) =>
+              setFormData((prev) => ({ ...prev, location: val }))
+            }
+          />
+        </div>
         <textarea
           name="description"
           value={formData.description}
