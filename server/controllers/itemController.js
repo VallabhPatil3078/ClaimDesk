@@ -1,5 +1,3 @@
-// server/controllers/itemController.js
-
 const cloudinary = require('cloudinary').v2;
 const Item = require('../models/Items');
 
@@ -9,11 +7,10 @@ exports.addItem = async (req, res) => {
   let imageUrl = null;
 
   try {
-    // ✅ Only use the correct, promisified Cloudinary upload
     if (req.file) {
       imageUrl = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { folder: 'lostfound', timeout: 20000 }, // optional: add timeout
+          { folder: 'lostfound', timeout: 20000 },
           (error, result) => {
             if (error) return reject(error);
             resolve(result.secure_url);
@@ -27,7 +24,7 @@ exports.addItem = async (req, res) => {
       title,
       description,
       location,
-      status,
+      status: status || 'pending',
       imageUrl,
       user: req.user.id,
     });
@@ -35,7 +32,7 @@ exports.addItem = async (req, res) => {
     const savedItem = await item.save();
     res.status(201).json(savedItem);
   } catch (err) {
-    console.error('Add Item Error:', err); // helpful for debugging
+    console.error('Add Item Error:', err);
     res.status(500).json({ message: 'Failed to add item', error: err.message });
   }
 };
@@ -46,7 +43,7 @@ exports.getAllItems = async (req, res) => {
     const { status, location, date } = req.query;
     const query = {};
 
-    if (status) query.status = status; // 'lost' or 'found'
+    if (status) query.status = status;
     if (location) query.location = location;
     if (date) {
       const start = new Date(date);
@@ -76,18 +73,13 @@ exports.getMyItems = async (req, res) => {
 exports.deleteItem = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
-
-    if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
-    }
+    if (!item) return res.status(404).json({ message: 'Item not found' });
 
     if (item.user.toString() !== req.user.id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to delete this item' });
     }
 
-
     await item.deleteOne();
-
     res.status(200).json({ message: 'Item deleted successfully' });
   } catch (err) {
     console.error('Delete Error:', err);
@@ -95,7 +87,7 @@ exports.deleteItem = async (req, res) => {
   }
 };
 
-
+// PUT /api/items/:id - Update item info
 exports.updateItem = async (req, res) => {
   try {
     const { id } = req.params;
@@ -104,18 +96,15 @@ exports.updateItem = async (req, res) => {
     const item = await Item.findById(id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
 
-    // Ownership check
     if (item.user.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this item' });
     }
 
-    // Update fields
     item.title = title || item.title;
     item.description = description || item.description;
     item.location = location || item.location;
     item.status = status || item.status;
 
-    // Handle image upload if new photo provided
     if (req.file) {
       const upload = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
@@ -133,4 +122,26 @@ exports.updateItem = async (req, res) => {
   }
 };
 
+// PATCH /api/items/:id/status - Pending → Returned
+exports.toggleStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = await Item.findById(id);
 
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+
+    if (item.user.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to change status' });
+    }
+
+    if (item.status === 'pending') {
+      item.status = 'returned';
+      await item.save();
+      return res.json({ message: 'Status updated', status: item.status });
+    } else {
+      return res.status(400).json({ message: 'Status can only change from pending to returned' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update status', error: err.message });
+  }
+};

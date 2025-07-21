@@ -12,7 +12,7 @@ export const addLostItem = (itemData, token) => {
   return API.post('/items', itemData, {
     headers: {
       'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,  // send token here
+      Authorization: `Bearer ${token}`,
     },
   });
 };
@@ -21,7 +21,7 @@ export const addFoundItem = (itemData, token) => {
   return API.post('/items', itemData, {
     headers: {
       'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,  // send token here
+      Authorization: `Bearer ${token}`,
     },
   });
 };
@@ -59,7 +59,6 @@ export const deleteUser = (id, token) =>
     },
   });
 
-// 🔹 NEW: Get a single item by ID
 export const getItemById = (id, token) =>
   API.get(`/items/${id}`, {
     headers: {
@@ -67,11 +66,18 @@ export const getItemById = (id, token) =>
     },
   });
 
-// 🔹 NEW: Update an item by ID
 export const updateItemAPI = (id, updatedData, token) =>
   API.put(`/items/${id}`, updatedData, {
     headers: {
       'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+// Correct function to update status from "pending" → "returned"
+export const updateItemStatus = (id, token) =>
+  API.patch(`/items/${id}/status`, null, {
+    headers: {
       Authorization: `Bearer ${token}`,
     },
   });

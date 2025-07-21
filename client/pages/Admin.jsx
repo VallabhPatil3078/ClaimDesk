@@ -3,7 +3,8 @@ import {
   getAllUsers,
   fetchItems,
   deleteUser as deleteUserAPI,
-  deleteItemAPI
+  deleteItemAPI,
+  updateItemStatus // for status update
 } from "../src/api/api";
 
 function Admin() {
@@ -14,7 +15,7 @@ function Admin() {
   const [lostItems, setLostItems] = useState([]);
   const [foundItems, setFoundItems] = useState([]);
 
-  const token = localStorage.getItem("authToken"); // or use context
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,12 +45,8 @@ function Admin() {
   };
 
   const deleteItem = async (id, type) => {
-    const token = localStorage.getItem("authToken");
-
     try {
-      await deleteItemAPI(id, token); // ✅ API call to backend
-
-      // ✅ Update local state after successful deletion
+      await deleteItemAPI(id, token);
       if (type === "lost") {
         setLostItems((prev) => prev.filter((item) => item._id !== id));
       } else {
@@ -61,13 +58,20 @@ function Admin() {
     }
   };
 
-  const markAsReturned = (id, isLost) => {
-    const updateStatus = (items) =>
-      items.map((item) =>
-        item._id === id ? { ...item, status: "returned" } : item
-      );
-    if (isLost) setLostItems(updateStatus);
-    else setFoundItems(updateStatus);
+  const markAsReturned = async (id, isLost) => {
+    try {
+      const res = await updateItemStatus(id, token); // API call to backend
+      const updateStatus = (items) =>
+        items.map((item) =>
+          item._id === id ? { ...item, status: res.data.status } : item
+        );
+
+      if (isLost) setLostItems(updateStatus);
+      else setFoundItems(updateStatus);
+    } catch (err) {
+      console.error("Failed to update status", err);
+      alert("Failed to update status");
+    }
   };
 
   const renderTable = (items, deleteFunc, isLost = false) => (
@@ -92,8 +96,8 @@ function Admin() {
               <td className="p-3 text-gray-500">{item.description}</td>
               <td className="p-3">
                 <img
-                  src={item.photo || "https://via.placeholder.com/80x80?text=No+Image"}
-                  alt="Item"
+                  src={item.imageUrl || "https://via.placeholder.com/80x80?text=No+Image"}
+                  alt={item.title || "Item"}
                   className="h-16 w-16 object-cover rounded-lg border"
                 />
               </td>
@@ -106,7 +110,7 @@ function Admin() {
                     onClick={() => markAsReturned(item._id, isLost)}
                     className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500 transition"
                   >
-                    Pending
+                    {item.status === "pending" ? "Pending" : item.status}
                   </button>
                 )}
               </td>
@@ -184,17 +188,17 @@ function Admin() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-b from-blue-50 via-white to-blue-50">
-      {/* Sidebar */}
       <aside className="hidden md:block w-64 bg-white shadow-lg p-5 border-r border-gray-200">
         <h2 className="text-xl font-bold mb-6 text-gray-800">Admin Menu</h2>
         <ul className="space-y-4">
           {["users", "lost", "found"].map((view) => (
             <li key={view}>
               <button
-                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${selectedView === view
+                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
+                  selectedView === view
                     ? "bg-blue-600 text-white shadow"
                     : "hover:bg-blue-50 text-gray-700"
-                  }`}
+                }`}
                 onClick={() => setSelectedView(view)}
               >
                 {view === "users"
@@ -205,41 +209,6 @@ function Admin() {
           ))}
         </ul>
       </aside>
-
-      {/* Sidebar mobile toggle */}
-      <aside
-        className={`md:hidden fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg p-5 border-r border-gray-200 z-20 transform transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-      >
-        <h2 className="text-xl font-bold mb-6 text-gray-800">Admin Menu</h2>
-        <ul className="space-y-4">
-          {["users", "lost", "found"].map((view) => (
-            <li key={view}>
-              <button
-                className={`w-full text-left px-4 py-2 rounded-lg font-medium ${selectedView === view
-                    ? "bg-blue-600 text-white shadow"
-                    : "hover:bg-blue-50 text-gray-700"
-                  }`}
-                onClick={() => {
-                  setSelectedView(view);
-                  setSidebarOpen(false);
-                }}
-              >
-                {view === "users"
-                  ? "View Users"
-                  : `View ${view.charAt(0).toUpperCase() + view.slice(1)} Items`}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </aside>
-
-      <button
-        className="md:hidden fixed top-20 left-4 z-30 bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        Menu
-      </button>
 
       <main className="flex-grow p-6 mt-16 md:mt-0 overflow-x-auto">
         {renderContent()}
