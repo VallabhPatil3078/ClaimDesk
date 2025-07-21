@@ -95,33 +95,42 @@ exports.deleteItem = async (req, res) => {
   }
 };
 
-// PUT /api/items/:id - Update item info
+
 exports.updateItem = async (req, res) => {
-  const { id } = req.params;
-  const { title, description, location, status, imageUrl } = req.body;
-
   try {
+    const { id } = req.params;
+    const { title, description, location, status } = req.body;
+
     const item = await Item.findById(id);
+    if (!item) return res.status(404).json({ message: 'Item not found' });
 
-    if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
-    }
-
+    // Ownership check
     if (item.user.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this item' });
     }
 
-
+    // Update fields
     item.title = title || item.title;
     item.description = description || item.description;
     item.location = location || item.location;
     item.status = status || item.status;
-    item.imageUrl = imageUrl || item.imageUrl;
+
+    // Handle image upload if new photo provided
+    if (req.file) {
+      const upload = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: 'lostfound' },
+          (error, result) => (error ? reject(error) : resolve(result))
+        ).end(req.file.buffer);
+      });
+      item.imageUrl = upload.secure_url;
+    }
 
     const updatedItem = await item.save();
     res.json(updatedItem);
-
   } catch (err) {
     res.status(500).json({ message: 'Failed to update item', error: err.message });
   }
 };
+
+

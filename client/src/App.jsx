@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import './App.css';
 
 // Import the AuthProvider
-import { AuthProvider } from './context/AuthContext'; // Make sure this path is correct
+import { AuthProvider } from './context/AuthContext';
 
 // Pages
 import Login from './../pages/Login';
@@ -16,6 +16,7 @@ import ReportFound from './../pages/ReportFound';
 import Admin from './../pages/Admin';
 import ForgotPassword from '../pages/ForgotPassword';
 import User from './../pages/User';
+import EditItem from './../pages/EditItem'; // ✅ New import
 
 // Components
 import Navbar from '../components/Navbar';
@@ -26,7 +27,7 @@ function Layout({ children }) {
   const location = useLocation();
 
   // Hide footer on these routes
-  const hideFooterRoutes = ['/login', '/signup', '/forgot-password']; // Added signup and forgot-password as common routes to hide footer
+  const hideFooterRoutes = ['/login', '/signup', '/forgot-password'];
   const shouldHideFooter = hideFooterRoutes.includes(location.pathname);
 
   return (
@@ -41,7 +42,6 @@ function Layout({ children }) {
 function App() {
   return (
     <Router>
-      {/* Wrap the Layout component with AuthProvider */}
       <AuthProvider>
         <Layout>
           <Routes>
@@ -57,6 +57,7 @@ function App() {
             <Route path="/user" element={<User />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/success" element={<AuthSuccess />} />
+            <Route path="/edit-item/:id" element={<EditItem />} /> {/* ✅ New route */}
           </Routes>
         </Layout>
       </AuthProvider>

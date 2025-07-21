@@ -1,4 +1,3 @@
-// client/src/api/api.js
 import axios from 'axios';
 
 const API = axios.create({
@@ -46,7 +45,6 @@ export const fetchLostItems = (params) => API.get('/items', { params });
 export const fetchItems = (filters) =>
   API.get('/items', { params: filters });
 
-
 export const getAllUsers = (token) =>
   API.get('/users', {
     headers: {
@@ -57,6 +55,23 @@ export const getAllUsers = (token) =>
 export const deleteUser = (id, token) =>
   API.delete(`/users/${id}`, {
     headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+// 🔹 NEW: Get a single item by ID
+export const getItemById = (id, token) =>
+  API.get(`/items/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+// 🔹 NEW: Update an item by ID
+export const updateItemAPI = (id, updatedData, token) =>
+  API.put(`/items/${id}`, updatedData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,
     },
   });
