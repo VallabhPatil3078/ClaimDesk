@@ -15,10 +15,12 @@ const AuthSuccess = () => {
     if (token && userJson) {
       const user = JSON.parse(decodeURIComponent(userJson));
       login(token, user);
-      localStorage.setItem("token", token);
+      localStorage.setItem("authToken", token); // corrected key
+
+      // Redirect based on role
       navigate(user.role === 'admin' ? '/admin' : '/');
     } else {
-      navigate('/login');
+      navigate('/'); // fallback to home
     }
   }, [navigate, login]);
 
