@@ -1,8 +1,9 @@
 const cloudinary = require('cloudinary').v2;
 const Item = require('../models/Items');
+const SendMails = require('../models/SendMails');
 
 // POST /api/items - Add new item
-exports.addItem = async (req, res) => {
+const addItem = async (req, res) => {
   const { title, description, location, status } = req.body;
   let imageUrl = null;
 
@@ -38,7 +39,7 @@ exports.addItem = async (req, res) => {
 };
 
 // GET /api/items - Public
-exports.getAllItems = async (req, res) => {
+const getAllItems = async (req, res) => {
   try {
     const { status, location, date } = req.query;
     const query = {};
@@ -60,7 +61,7 @@ exports.getAllItems = async (req, res) => {
 };
 
 // GET /api/items/my - Logged-in user's items
-exports.getMyItems = async (req, res) => {
+const getMyItems = async (req, res) => {
   try {
     const items = await Item.find({ user: req.user.id });
     res.json(items);
@@ -70,7 +71,7 @@ exports.getMyItems = async (req, res) => {
 };
 
 // DELETE /api/items/:id - Delete item
-exports.deleteItem = async (req, res) => {
+const deleteItem = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
@@ -88,7 +89,7 @@ exports.deleteItem = async (req, res) => {
 };
 
 // PUT /api/items/:id - Update item info
-exports.updateItem = async (req, res) => {
+const updateItem = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, location, status } = req.body;
@@ -123,7 +124,7 @@ exports.updateItem = async (req, res) => {
 };
 
 // PATCH /api/items/:id/status - Pending → Returned
-exports.toggleStatus = async (req, res) => {
+const toggleStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const item = await Item.findById(id);
@@ -144,4 +145,60 @@ exports.toggleStatus = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Failed to update status', error: err.message });
   }
+};
+
+// POST /api/items/notify-owner - Notify the owner via email
+const notifyOwner = async (req, res) => {
+  const { itemId, message } = req.body;
+
+  try {
+    const item = await Item.findById(itemId).populate('user');
+    if (!item) {
+      console.error('❌ Item not found');
+      return res.status(400).json({ error: 'Item not found' });
+    }
+
+    if (!item.title || !item.user?.email) {
+      console.error('❌ Missing item.title or user.email');
+      return res.status(400).json({ error: 'Required fields missing' });
+    }
+
+    const senderName = req.user.name;
+    const senderEmail = req.user.email;
+
+    const emailText = `
+Hi ${item.user.name},
+
+Someone is interested in your ${item.status} item: "${item.title}".
+
+Message:
+${message || "No message provided."}
+
+Notifier:
+Name: ${senderName}
+Email: ${senderEmail}
+`;
+
+    await SendMails({
+      to: item.user.email,
+      subject: `Interest in your ${item.status} item: "${item.title}"`,
+      text: emailText,
+    });
+
+    console.log('✅ Email sent successfully');
+    res.status(200).json({ success: true });
+  } catch (err) {
+  console.error('Notify Owner Error:', err); // Already exists
+  res.status(500).json({ error: 'Failed to notify owner' });
+}
+};
+
+module.exports = {
+  addItem,
+  getAllItems,
+  getMyItems,
+  deleteItem,
+  updateItem,
+  toggleStatus,
+  notifyOwner,
 };

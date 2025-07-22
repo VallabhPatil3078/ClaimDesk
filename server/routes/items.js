@@ -1,21 +1,32 @@
+// routes/items.js
+
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
+
+const requireAuth = require('../middleware/authMiddleware');
 const upload = require('../middleware/multer');
-const { addItem, getAllItems, getMyItems, deleteItem, updateItem } = require('../controllers/itemController');
 const Item = require('../models/Items');
 
+const {
+  addItem,
+  getAllItems,
+  getMyItems,
+  deleteItem,
+  updateItem,
+  notifyOwner
+} = require('../controllers/itemController');
+
 // Add new item
-router.post('/', protect, upload.single('photo'), addItem);
+router.post('/', requireAuth, upload.single('photo'), addItem);
 
 // Get all items
 router.get('/', getAllItems);
 
 // Get logged-in user's items
-router.get('/my', protect, getMyItems);
+router.get('/my', requireAuth, getMyItems);
 
 // Get single item by ID
-router.get('/:id', protect, async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
@@ -31,10 +42,10 @@ router.get('/:id', protect, async (req, res) => {
 });
 
 // Update item details
-router.put('/:id', protect, upload.single('photo'), updateItem);
+router.put('/:id', requireAuth, upload.single('photo'), updateItem);
 
 // Update status (Pending → Returned)
-router.patch('/:id/status', protect, async (req, res) => {
+router.patch('/:id/status', requireAuth, async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
@@ -58,6 +69,9 @@ router.patch('/:id/status', protect, async (req, res) => {
 });
 
 // Delete item
-router.delete('/:id', protect, deleteItem);
+router.delete('/:id', requireAuth, deleteItem);
+
+// Notify owner
+router.post('/notify-owner', requireAuth, notifyOwner);
 
 module.exports = router;

@@ -46,37 +46,37 @@ app.use('/api/items', require('./routes/items'));
 app.use('/api/users', require('./routes/users'));
 
 // Email notification endpoint
-app.post('/api/notify-owner', async (req, res) => {
-  const { email, itemTitle } = req.body;
+// app.post('/api/notify-owner', async (req, res) => {
+//   const { email, itemTitle } = req.body;
 
-  if (!email || !itemTitle) {
-    return res.status(400).json({ message: 'Email and item title are required' });
-  }
+//   if (!email || !itemTitle) {
+//     return res.status(400).json({ message: 'Email and item title are required' });
+//   }
 
-  try {
-    // Configure transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // Use App Password for Gmail
-      },
-    });
+//   try {
+//     // Configure transporter
+//     const transporter = nodemailer.createTransport({
+//       service: 'gmail',
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS, // Use App Password for Gmail
+//       },
+//     });
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Interest in your item',
-      text: `Hello,\n\nSomeone is interested in your item: "${itemTitle}". Please check your account for more details.\n\nThank you!`,
-    };
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       subject: 'Interest in your item',
+//       text: `Hello,\n\nSomeone is interested in your item: "${itemTitle}". Please check your account for more details.\n\nThank you!`,
+//     };
 
-    await transporter.sendMail(mailOptions);
-    res.json({ message: 'Notification email sent successfully!' });
-  } catch (error) {
-    console.error('Email send error:', error);
-    res.status(500).json({ message: 'Failed to send notification' });
-  }
-});
+//     await transporter.sendMail(mailOptions);
+//     res.json({ message: 'Notification email sent successfully!' });
+//   } catch (error) {
+//     console.error('Email send error:', error);
+//     res.status(500).json({ message: 'Failed to send notification' });
+//   }
+// });
 
 // Health check
 app.get('/', (req, res) => res.send('API is running...'));
@@ -84,3 +84,8 @@ app.get('/', (req, res) => res.send('API is running...'));
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+
+//notify owner
+
+const items = require('./routes/items');
+app.use('/api/items', items);

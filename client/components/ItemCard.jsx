@@ -6,17 +6,40 @@ function ItemCard({ item, type = 'found' }) {
   const dateLabel = type === 'found' ? 'Found on' : 'Lost on';
   const defaultImage = '../assets/HomeIcon.png';
 
-  const handleNotify = async () => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/notify-owner', {
-        ownerEmail: item.ownerEmail,
-        itemTitle: item.title,
-      });
-      alert(response.data.message || 'Notification sent to the item owner!');
-    } catch (error) {
-      alert(error.response?.data?.message || 'Failed to send notification.');
-    }
-  };
+  const notifyOwner = async (itemId, title) => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    alert("You must be logged in to notify the owner.");
+    return;
+  }
+
+  if (!itemId || !title) {
+    alert("Missing item information.");
+    return;
+  }
+
+  try {
+    await axios.post(
+      'http://localhost:5000/api/items/notify-owner',
+      {
+        itemId,
+        message: `Hi! I may have information about your item titled "${title}".`,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    alert("Owner has been notified!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to notify owner.");
+  }
+};
+
 
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col overflow-hidden hover:shadow-xl transition duration-300">
@@ -47,9 +70,8 @@ function ItemCard({ item, type = 'found' }) {
 
       {/* Notify Button */}
       <button
-        onClick={handleNotify}
-        className="bg-blue-600 text-white py-2 flex items-center justify-center gap-2 text-sm font-medium hover:bg-blue-700 transition"
-      >
+        onClick= {() => notifyOwner(item._id, item.title)}
+        className="bg-blue-600 text-white py-2 flex items-center justify-center gap-2 text-sm font-medium hover:bg-blue-700 transition">
         <FiBell size={18} /> Notify Owner
       </button>
     </div>
