@@ -1,16 +1,15 @@
-//server/context/AuthContext.js
+// server/context/AuthContext.js
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { jwtDecode } from 'jwt-decode'; // <-- Add at top
+import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify'; // ✅ Add this
 
-// Create the AuthContext
 export const AuthContext = createContext();
 
-// Create the AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // Stores user data if logged in
-  const [authToken, setAuthToken] = useState(null); // Stores the JWT token
-  const [isLoading, setIsLoading] = useState(true); // To check initial loading from localStorage
+  const [user, setUser] = useState(null);
+  const [authToken, setAuthToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
@@ -22,7 +21,7 @@ export const AuthProvider = ({ children }) => {
         const isExpired = decoded.exp * 1000 < Date.now();
 
         if (isExpired) {
-          logout(); // Clear token if expired
+          logout();
         } else {
           setAuthToken(storedToken);
           setUser(storedUser ? JSON.parse(storedUser) : null);
@@ -35,12 +34,12 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-
   const login = (token, userData) => {
     localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(userData)); // Store user data
+    localStorage.setItem('user', JSON.stringify(userData));
     setAuthToken(token);
     setUser(userData);
+    toast.success(`Welcome, ${userData.name || 'User'}! 🎉`);
   };
 
   const logout = () => {
@@ -48,6 +47,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     setAuthToken(null);
     setUser(null);
+    toast.info('You have been logged out.');
   };
 
   return (
@@ -57,7 +57,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use AuthContext easily
 export const useAuth = () => {
   return useContext(AuthContext);
 };

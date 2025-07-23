@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateItemAPI, getItemById } from "../src/api/api";
 import LocationAutocomplete from "../components/LocationAutocomplete";
+import { toast } from "react-toastify";
 
 function EditItem() {
   const { id } = useParams();
@@ -13,7 +14,7 @@ function EditItem() {
     status: "lost",
     imageUrl: "",
   });
-  const [photo, setPhoto] = useState(null); // For new file
+  const [photo, setPhoto] = useState(null);
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
@@ -22,9 +23,9 @@ function EditItem() {
         const token = localStorage.getItem("authToken");
         const res = await getItemById(id, token);
         setFormData(res.data);
-        setPreview(res.data.imageUrl); // Show existing image
+        setPreview(res.data.imageUrl);
       } catch (err) {
-        alert("Failed to load item.");
+        toast.error("Failed to load item.");
       }
     };
     fetchItem();
@@ -50,14 +51,16 @@ function EditItem() {
     data.append("location", formData.location);
     data.append("description", formData.description);
     data.append("status", formData.status);
-    if (photo) data.append("photo", photo); // Only append if a new photo is selected
+    if (photo) data.append("photo", photo);
 
     try {
       await updateItemAPI(id, data, token);
-      alert("Item updated successfully!");
-      navigate("/user");
+      toast.success("Item updated successfully!");
+      setTimeout(() => {
+        navigate("/user");
+      }, 1000);
     } catch (err) {
-      alert("Failed to update item.");
+      toast.error("Failed to update item.");
     }
   };
 
@@ -74,14 +77,14 @@ function EditItem() {
           placeholder="Item Name"
           className="w-full mb-3 p-2 border rounded"
         />
+
         <div className="mb-3">
           <LocationAutocomplete
             value={formData.location}
-            onChange={(val) =>
-              setFormData((prev) => ({ ...prev, location: val }))
-            }
+            onChange={(val) => setFormData((prev) => ({ ...prev, location: val }))}
           />
         </div>
+
         <textarea
           name="description"
           value={formData.description}
@@ -89,6 +92,7 @@ function EditItem() {
           placeholder="Description"
           className="w-full mb-3 p-2 border rounded"
         />
+
         <select
           name="status"
           value={formData.status}

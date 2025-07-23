@@ -3,6 +3,7 @@ import { useAuth } from '../src/context/AuthContext';
 import { addFoundItem } from '../src/api/api';
 import { useNavigate } from 'react-router-dom';
 import LocationAutocomplete from "../components/LocationAutocomplete";
+import { toast } from 'react-toastify';
 
 function ReportFound() {
   const [formData, setFormData] = useState({
@@ -13,11 +14,9 @@ function ReportFound() {
   });
 
   const [photoPreview, setPhotoPreview] = useState(null);
-
   const { authToken } = useAuth();
   const navigate = useNavigate();
 
-  // Capitalize first letter of every word
   const capitalizeInput = (value) =>
     value
       .toLowerCase()
@@ -61,11 +60,11 @@ function ReportFound() {
 
     try {
       await addFoundItem(data, authToken);
-      alert('Found item reported successfully!');
+      toast.success('Found item reported successfully!');
       handleReset();
       navigate('/found-item');
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to report found item');
+      toast.error(error.response?.data?.message || 'Failed to report found item');
     }
   };
 
@@ -80,7 +79,6 @@ function ReportFound() {
             Report Found Item
           </h2>
 
-          {/* Item Name */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Item Name
@@ -95,7 +93,6 @@ function ReportFound() {
             />
           </div>
 
-          {/* Found Location */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Found Location
@@ -108,7 +105,6 @@ function ReportFound() {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Description
@@ -123,7 +119,6 @@ function ReportFound() {
             />
           </div>
 
-          {/* Upload Photo */}
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-600">
               Upload Photo
@@ -154,7 +149,6 @@ function ReportFound() {
             )}
           </div>
 
-          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               type="submit"

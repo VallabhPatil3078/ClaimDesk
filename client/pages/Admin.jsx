@@ -4,13 +4,12 @@ import {
   fetchItems,
   deleteUser as deleteUserAPI,
   deleteItemAPI,
-  updateItemStatus
+  updateItemStatus,
 } from "../src/api/api";
+import { toast } from "react-toastify";
 
 function Admin() {
   const [selectedView, setSelectedView] = useState("users");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const [users, setUsers] = useState([]);
   const [lostItems, setLostItems] = useState([]);
   const [foundItems, setFoundItems] = useState([]);
@@ -45,8 +44,6 @@ function Admin() {
         setActivityItems(sortedItems);
       } catch (error) {
         console.error("Failed to fetch admin data", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -58,8 +55,9 @@ function Admin() {
     try {
       await deleteUserAPI(id, token);
       setUsers((prev) => prev.filter((user) => user._id !== id));
+      toast.success("User deleted");
     } catch (err) {
-      console.error("Failed to delete user", err);
+      toast.error("Failed to delete user");
     }
   };
 
@@ -67,12 +65,13 @@ function Admin() {
     if (!window.confirm("Delete this item?")) return;
     try {
       await deleteItemAPI(id, token);
-      if (type === "lost") setLostItems((prev) => prev.filter((item) => item._id !== id));
-      else setFoundItems((prev) => prev.filter((item) => item._id !== id));
-      setActivityItems((prev) => prev.filter((item) => item._id !== id));
+      if (type === "lost") {
+        setLostItems((prev) => prev.filter((item) => item._id !== id));
+      } else {
+        setFoundItems((prev) => prev.filter((item) => item._id !== id));
+      }
     } catch (err) {
-      console.error("Failed to delete item:", err);
-      alert("Failed to delete item.");
+      toast.error("Failed to delete item");
     }
   };
 
@@ -86,10 +85,8 @@ function Admin() {
 
       if (isLost) setLostItems(updateStatus);
       else setFoundItems(updateStatus);
-      setActivityItems(updateStatus);
     } catch (err) {
-      console.error("Failed to update status", err);
-      alert("Failed to update status");
+      toast.error("Failed to update item status");
     }
   };
 
