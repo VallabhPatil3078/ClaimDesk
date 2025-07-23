@@ -46,7 +46,7 @@ function App() {
     <Router>
       <AuthProvider>
         <Layout>
-          <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+          <ToastContainer position="top-right" autoClose={3000} theme="light" />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />

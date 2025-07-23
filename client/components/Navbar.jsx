@@ -1,24 +1,27 @@
 import React, { useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import { Link, NavLink, useNavigate } from 'react-router-dom'; // Import useNavigate
-import { useAuth } from '../src/context/AuthContext'; // Import useAuth hook
-import { UserCircle, LogOut } from 'lucide-react'; // Import icons from lucide-react
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../src/context/AuthContext';
+import { UserCircle, LogOut } from 'lucide-react';
+
+// ✅ Toastify imports
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout, isLoading } = useAuth(); // Get user, logout, and isLoading from AuthContext
-  const navigate = useNavigate(); // Initialize useNavigate
+  const { user, logout, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   const linkClasses = ({ isActive }) =>
     `text-gray-700 hover:text-blue-600 ${isActive ? 'text-red-600 font-semibold' : ''}`;
 
   const handleLogout = () => {
-    logout(); // Call logout function from AuthContext
-    setIsOpen(false); // Close mobile menu on logout
-    navigate('/login'); // Redirect to login page after logout
+    logout();
+    setIsOpen(false);
+    navigate('/login');
   };
 
-  // Show a loading state or nothing while the initial auth check is happening
   if (isLoading) {
     return (
       <nav className="bg-white shadow-md px-6 sm:px-8 py-4">
@@ -32,35 +35,35 @@ function Navbar() {
 
   return (
     <nav className="bg-white shadow-md px-6 sm:px-8 py-4">
+      {/* ✅ Toast container added here */}
+      <ToastContainer position="top-center" autoClose={3000} />
+      
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         {/* Logo */}
         <h1 className="text-2xl font-bold text-blue-600">ClaimDesk</h1>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex space-x-6 items-center"> {/* Added items-center for vertical alignment */}
+        <div className="hidden md:flex space-x-6 items-center">
           <NavLink to="/" className={linkClasses}>Home</NavLink>
           <NavLink to="/about" className={linkClasses}>About</NavLink>
-          {user ? ( // Conditionally render based on user login status
+          {user ? (
             <>
-              {/* User Profile Link */}
               <NavLink to={user.role === 'admin' ? '/admin' : '/user'} className={linkClasses}>
                 <div className="flex items-center space-x-1">
-                  <UserCircle size={20} /> {/* User profile icon */}
-                  <span>{user.username || 'Profile'}</span> {/* Display username or 'Profile' */}
+                  <UserCircle size={20} />
+                  <span>{user.username || 'Profile'}</span>
                 </div>
               </NavLink>
-              {/* Logout Button */}
               <button
                 onClick={handleLogout}
                 className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 focus:outline-none"
               >
-                <LogOut size={20} /> {/* Logout icon */}
+                <LogOut size={20} />
                 <span>Logout</span>
               </button>
             </>
           ) : (
             <>
-              {/* Login and Sign Up Links */}
               <NavLink to="/login" className={linkClasses}>Login</NavLink>
               <NavLink to="/signup" className={linkClasses}>Sign Up</NavLink>
             </>

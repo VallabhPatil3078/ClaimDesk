@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { login as apiLogin } from "../src/api/api";
 import { useAuth } from "../src/context/AuthContext";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,6 @@ function Login() {
       const { token, user } = res.data;
 
       contextLogin(token, user);
-      toast.success("Login successful!");
 
       if (user.role === "admin") {
         navigate("/admin");

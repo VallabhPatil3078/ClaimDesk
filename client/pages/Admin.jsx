@@ -6,7 +6,8 @@ import {
   deleteItemAPI,
   updateItemStatus,
 } from "../src/api/api";
-import { toast } from "react-toastify";
+import { toast } from "react-toastify"; // ✅ Removed ToastContainer import
+import "react-toastify/dist/ReactToastify.css";
 
 function Admin() {
   const [selectedView, setSelectedView] = useState("users");
@@ -188,6 +189,7 @@ function Admin() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-b from-blue-50 via-white to-blue-50">
+      {/* ✅ Removed <ToastContainer /> from here */}
       <aside className="hidden md:block w-64 bg-white shadow-lg p-5 border-r border-gray-200">
         <h2 className="text-xl font-bold mb-6 text-gray-800">Admin Menu</h2>
         <ul className="space-y-4">

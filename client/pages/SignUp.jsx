@@ -43,12 +43,10 @@ function SignUp() {
       const { token, user } = res.data;
 
       contextLogin(token, user);
-      toast.success('Signup successful!');
-
       navigate(user.role === 'admin' ? '/admin' : '/');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Signup failed. Please try again.');
       console.error('Signup failed:', err);
+      toast.error(err.response?.data?.message || 'Signup failed. Please try again.');
     }
   };
 

@@ -62,7 +62,7 @@ function ForgotPassword() {
 
   return (
     <div className="flex items-start justify-center min-h-[85vh] bg-gray-100 pt-10">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      <ToastContainer position="top-center" autoClose={3000} theme="light" />
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl shadow-black/40">
         <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">Reset Password</h2>
         <hr className="mb-6 border-t border-gray-300" />
