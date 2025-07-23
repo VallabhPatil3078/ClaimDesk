@@ -7,7 +7,7 @@ function ItemCard({ item, type = 'found' }) {
   const defaultImage = '../assets/HomeIcon.png';
 
   const notifyOwner = async (itemId, title) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('authToken');
 
   if (!token) {
     alert("You must be logged in to notify the owner.");
