@@ -42,8 +42,15 @@ function SignUp() {
       const res = await apiSignup(formData);
       const { token, user } = res.data;
 
-      contextLogin(token, user);
-      navigate(user.role === 'admin' ? '/admin' : '/');
+      if (user.role === 'admin') {
+        contextLogin(token, user);
+        toast.success('Admin signup successful!');
+        navigate('/admin');
+      } else {
+        toast.success('Signup successful! Please check your email to verify.');
+        navigate('/login');
+      }
+
     } catch (err) {
       console.error('Signup failed:', err);
       toast.error(err.response?.data?.message || 'Signup failed. Please try again.');

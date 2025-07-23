@@ -1,48 +1,57 @@
+// server/controllers/authController.js
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const transporter = require('../config/nodemailer');
+const generateEmailToken = require('../utils/generateEmailToken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const ADMIN_INVITE_CODE = process.env.ADMIN_INVITE_CODE; // ✅ Set this in .env
+const ADMIN_INVITE_CODE = process.env.ADMIN_INVITE_CODE;
 
-// Signup
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, role, inviteCode } = req.body;
 
-    // Check if email is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: 'Email already in use' });
 
-    // ✅ Block admin registration unless correct invite code is provided
-    if (role === 'admin') {
-      if (inviteCode !== ADMIN_INVITE_CODE) {
-        return res.status(403).json({ message: 'Invalid or missing invite code for admin registration' });
-      }
+    const isAdmin = role === 'admin' && inviteCode === ADMIN_INVITE_CODE;
+    if (role === 'admin' && !isAdmin) {
+      return res.status(403).json({ message: 'Invalid or missing invite code for admin registration' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
     const user = new User({
       name,
       email,
       password: hashedPassword,
-      role: role || 'user'
+      role: role || 'user',
+      isVerified: isAdmin ? true : false,
     });
     await user.save();
 
-    // Generate JWT token
+    // Send email verification link only for non-admin users
+    if (!isAdmin) {
+      const emailToken = generateEmailToken(user._id);
+      const verifyLink = `${process.env.CLIENT_URL}/verify-email/${emailToken}`;
+
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: user.email,
+        subject: 'Verify your email - ClaimDesk',
+        html: `<p>Hi ${user.name},</p><p>Click <a href="${verifyLink}">here</a> to verify your email.</p>`
+      });
+    }
+
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    // Return token and user info
     res.status(201).json({
-      message: 'User created successfully',
+      message: isAdmin ? 'Admin created successfully' : 'User created. Please verify your email.',
       token,
       user: {
         id: user._id,
@@ -51,32 +60,29 @@ exports.signup = async (req, res) => {
         role: user.role,
       },
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// Login
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Find user by email
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Generate JWT
+    if (user.role !== 'admin' && !user.isVerified) {
+      return res.status(403).json({ message: 'Please verify your email before logging in' });
+    }
+
     const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role }, // ✅ Include all three
+      { id: user._id, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: '1d' }
     );
-
 
     res.json({
       token,
@@ -92,19 +98,13 @@ exports.login = async (req, res) => {
   }
 };
 
-// Reset Password
 exports.resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
-
-    // Find user by email
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Update user's password
     user.password = hashedPassword;
     await user.save();
 

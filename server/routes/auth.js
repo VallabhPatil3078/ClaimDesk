@@ -1,16 +1,17 @@
-// server/routes/auth.js
+// ✅ UPDATED FILE: server/routes/auth.js
 const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { signup, login, resetPassword } = require('../controllers/authController');
+const verifyEmail = require('../controllers/verifyEmail');
 
 const CLIENT_URL = 'http://localhost:5173';
 
-// Email/Password Auth
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/reset-password', resetPassword);
+router.get('/verify-email/:token', verifyEmail);
 
 // --- OAuth Routes ---
 

@@ -20,14 +20,15 @@ function Login() {
 
       contextLogin(token, user);
 
-      if (user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      navigate(user.role === "admin" ? "/admin" : "/");
     } catch (err) {
-      console.error("Login failed:", err.response?.data?.message || err.message);
-      toast.error(err.response?.data?.message || "Login failed. Please try again.");
+      const msg = err.response?.data?.message || err.message;
+      console.error("Login failed:", msg);
+      toast.error(
+        msg === 'Please verify your email before logging in'
+          ? 'Please verify your email. Check your inbox.'
+          : msg
+      );
     }
   };
 
