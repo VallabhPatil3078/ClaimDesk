@@ -16,7 +16,8 @@ import ReportFound from './../pages/ReportFound';
 import Admin from './../pages/Admin';
 import ForgotPassword from '../pages/ForgotPassword';
 import User from './../pages/User';
-import EditItem from './../pages/EditItem'; // ✅ New import
+import EditItem from './../pages/EditItem';
+import VerifyEmail from '../pages/VerifyEmail';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -57,7 +58,8 @@ function App() {
             <Route path="/user" element={<User />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/success" element={<AuthSuccess />} />
-            <Route path="/edit-item/:id" element={<EditItem />} /> {/* ✅ New route */}
+            <Route path="/edit-item/:id" element={<EditItem />} />
+            <Route path="/verify-email/:token" element={<VerifyEmail />} />
           </Routes>
         </Layout>
       </AuthProvider>

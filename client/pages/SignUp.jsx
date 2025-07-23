@@ -41,11 +41,15 @@ function SignUp() {
       const res = await apiSignup(formData);
       const { token, user } = res.data;
 
-      contextLogin(token, user);
+      if (user.role === 'admin') {
+        contextLogin(token, user);
+        navigate('/admin');
+        console.log('Admin signed up successfully');
+      } else {
+        alert('Signup successful! Please check your email to verify your account.');
+        navigate('/login');
+      }
 
-      navigate(user.role === 'admin' ? '/admin' : '/');
-
-      console.log(res.data.message || 'Signup successful!');
     } catch (err) {
       console.error('Signup failed:', err.response?.data?.message || err.message);
     }

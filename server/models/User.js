@@ -1,4 +1,5 @@
-// server/models/User.js
+// ✅ UPDATED FILE: server/models/User.js
+
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -14,6 +15,7 @@ const userSchema = new mongoose.Schema({
   facebookId: { type: String },
   appleId: { type: String },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  isVerified: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

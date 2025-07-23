@@ -25,10 +25,14 @@ function Login() {
         navigate("/");
       }
     } catch (err) {
-      console.error(
-        "Login failed:",
-        err.response?.data?.message || err.message
-      );
+      const msg = err.response?.data?.message || err.message;
+      if (msg === 'Please verify your email before logging in') {
+        alert('Please verify your email. Check your inbox.');
+      } else {
+        alert(msg);
+      }
+      console.error('Login failed:', msg);
+
     }
   };
 
