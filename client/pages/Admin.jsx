@@ -23,32 +23,35 @@ function Admin() {
   const token = localStorage.getItem("authToken");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
 
-        const usersRes = await getAllUsers(token);
-        setUsers(usersRes.data);
+      const usersRes = await getAllUsers(token);
+      setUsers(usersRes.data);
 
-        const itemsRes = await fetchItems();
-        const allItems = itemsRes.data;
+      const itemsRes = await fetchItems();
+      const allItems = itemsRes.data;
 
-        const sortedItems = [...allItems].sort((a, b) => {
-          const dateA = new Date(a.updatedAt || a.createdAt || 0);
-          const dateB = new Date(b.updatedAt || b.createdAt || 0);
-          return dateB - dateA;
-        });
+      const sortedItems = [...allItems].sort((a, b) => {
+        const dateA = new Date(a.updatedAt || a.createdAt || 0);
+        const dateB = new Date(b.updatedAt || b.createdAt || 0);
+        return dateB - dateA;
+      });
 
-        setLostItems(sortedItems.filter((item) => item.status === "lost"));
-        setFoundItems(sortedItems.filter((item) => item.status === "found"));
-        setActivityItems(sortedItems);
-      } catch (error) {
-        console.error("Failed to fetch admin data", error);
-      }
-    };
+      setLostItems(sortedItems.filter((item) => item.status === "lost"));
+      setFoundItems(sortedItems.filter((item) => item.status === "found"));
+      setActivityItems(sortedItems);
+    } catch (error) {
+      console.error("Failed to fetch admin data", error);
+    } finally {
+      setLoading(false); // ✅ THIS LINE FIXES THE ISSUE
+    }
+  };
 
-    fetchData();
-  }, [token]);
+  fetchData();
+}, [token]);
+
 
   const deleteUser = async (id) => {
     if (!window.confirm("Delete this user?")) return;
@@ -251,7 +254,16 @@ function Admin() {
 
   const renderContent = () => {
     if (loading) {
-      return <p className="text-center text-gray-600">Loading...</p>;
+      return (
+        <div className="text-center text-gray-600">
+          <p>Loading...</p>
+          <p>Users: {users.length}</p>
+          <p>Lost: {lostItems.length}</p>
+          <p>Found: {foundItems.length}</p>
+          <p>Activity: {activityItems.length}</p>
+        </div>
+      );
+
     }
 
     if (selectedView === "activity") {
@@ -310,9 +322,8 @@ function Admin() {
                   filteredUsers.map((user, index) => (
                     <tr
                       key={user._id}
-                      className={`border-b ${
-                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      } hover:bg-purple-50 transition`}
+                      className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                        } hover:bg-purple-50 transition`}
                     >
                       <td className="p-3 font-medium text-gray-700 flex items-center gap-2">
                         <div className="h-8 w-8 flex items-center justify-center bg-purple-200 text-purple-700 rounded-full font-bold">
@@ -371,11 +382,10 @@ function Admin() {
         <ul className="space-y-4">
           <li>
             <button
-              className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
-                selectedView === "users"
+              className={`w-full text-left px-4 py-2 rounded-lg font-medium ${selectedView === "users"
                   ? "bg-blue-600 text-white shadow"
                   : "hover:bg-blue-50 text-gray-700"
-              }`}
+                }`}
               onClick={() => setSelectedView("users")}
             >
               View Users {getBadge(users.length)}
@@ -383,11 +393,10 @@ function Admin() {
           </li>
           <li>
             <button
-              className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
-                selectedView === "lost"
+              className={`w-full text-left px-4 py-2 rounded-lg font-medium ${selectedView === "lost"
                   ? "bg-blue-600 text-white shadow"
                   : "hover:bg-blue-50 text-gray-700"
-              }`}
+                }`}
               onClick={() => setSelectedView("lost")}
             >
               Lost Items {getBadge(lostItems.length)}
@@ -395,11 +404,10 @@ function Admin() {
           </li>
           <li>
             <button
-              className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
-                selectedView === "found"
+              className={`w-full text-left px-4 py-2 rounded-lg font-medium ${selectedView === "found"
                   ? "bg-blue-600 text-white shadow"
                   : "hover:bg-blue-50 text-gray-700"
-              }`}
+                }`}
               onClick={() => setSelectedView("found")}
             >
               Found Items {getBadge(foundItems.length)}
@@ -407,11 +415,10 @@ function Admin() {
           </li>
           <li>
             <button
-              className={`w-full text-left px-4 py-2 rounded-lg font-medium ${
-                selectedView === "activity"
+              className={`w-full text-left px-4 py-2 rounded-lg font-medium ${selectedView === "activity"
                   ? "bg-blue-600 text-white shadow"
                   : "hover:bg-blue-50 text-gray-700"
-              }`}
+                }`}
               onClick={() => setSelectedView("activity")}
             >
               Activity Log {getBadge(activityItems.length)}
