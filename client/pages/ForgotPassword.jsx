@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ForgotPassword() {
   const [formData, setFormData] = useState({
@@ -24,19 +26,19 @@ function ForgotPassword() {
     // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address.');
+      toast.error('Please enter a valid email address.');
       return;
     }
 
     // Validate password
     if (formData.newPassword.length < 6) {
-      alert('Password must be at least 6 characters.');
+      toast.error('Password must be at least 6 characters.');
       return;
     }
 
     // Check if passwords match
     if (formData.newPassword !== formData.confirmPassword) {
-      alert('Passwords do not match.');
+      toast.error('Passwords do not match.');
       return;
     }
 
@@ -47,13 +49,12 @@ function ForgotPassword() {
         newPassword: formData.newPassword,
       });
 
-      alert(response.data.message || 'Password reset successful!');
+      toast.success(response.data.message || 'Password reset successful!');
       setFormData({ email: '', newPassword: '', confirmPassword: '' });
 
-      // Redirect to login after 2 seconds
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to reset password. Please try again.');
+      toast.error(error.response?.data?.message || 'Failed to reset password. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -61,6 +62,7 @@ function ForgotPassword() {
 
   return (
     <div className="flex items-start justify-center min-h-[85vh] bg-gray-100 pt-10">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl shadow-black/40">
         <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">Reset Password</h2>
         <hr className="mb-6 border-t border-gray-300" />

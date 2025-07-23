@@ -3,6 +3,7 @@ import { FiSearch } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { fetchItems } from '../src/api/api';
 import ItemCard from '../components/ItemCard';
+import { toast } from 'react-toastify';
 
 function FoundItem() {
   const navigate = useNavigate();
@@ -21,7 +22,8 @@ function FoundItem() {
         const response = await fetchItems(filters);
         setItems(response.data);
       } catch (error) {
-        console.error('Failed to fetch found items:', error);
+        toast.error('Failed to fetch found items. Please try again later.');
+        console.error('Fetch error:', error);
       }
     };
 

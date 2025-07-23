@@ -4,13 +4,12 @@ import {
   fetchItems,
   deleteUser as deleteUserAPI,
   deleteItemAPI,
-  updateItemStatus // for status update
+  updateItemStatus,
 } from "../src/api/api";
+import { toast } from "react-toastify";
 
 function Admin() {
   const [selectedView, setSelectedView] = useState("users");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const [users, setUsers] = useState([]);
   const [lostItems, setLostItems] = useState([]);
   const [foundItems, setFoundItems] = useState([]);
@@ -28,7 +27,7 @@ function Admin() {
         setLostItems(allItems.filter((item) => item.status === "lost"));
         setFoundItems(allItems.filter((item) => item.status === "found"));
       } catch (error) {
-        console.error("Failed to fetch admin data", error);
+        toast.error("Failed to fetch admin data");
       }
     };
 
@@ -39,8 +38,9 @@ function Admin() {
     try {
       await deleteUserAPI(id, token);
       setUsers((prev) => prev.filter((user) => user._id !== id));
+      toast.success("User deleted");
     } catch (err) {
-      console.error("Failed to delete user", err);
+      toast.error("Failed to delete user");
     }
   };
 
@@ -52,15 +52,15 @@ function Admin() {
       } else {
         setFoundItems((prev) => prev.filter((item) => item._id !== id));
       }
+      toast.success("Item deleted");
     } catch (err) {
-      console.error("Failed to delete item:", err);
-      alert("Failed to delete item.");
+      toast.error("Failed to delete item");
     }
   };
 
   const markAsReturned = async (id, isLost) => {
     try {
-      const res = await updateItemStatus(id, token); // API call to backend
+      const res = await updateItemStatus(id, token);
       const updateStatus = (items) =>
         items.map((item) =>
           item._id === id ? { ...item, status: res.data.status } : item
@@ -68,9 +68,9 @@ function Admin() {
 
       if (isLost) setLostItems(updateStatus);
       else setFoundItems(updateStatus);
+      toast.success("Item marked as returned");
     } catch (err) {
-      console.error("Failed to update status", err);
-      alert("Failed to update status");
+      toast.error("Failed to update item status");
     }
   };
 

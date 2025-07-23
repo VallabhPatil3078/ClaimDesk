@@ -1,8 +1,8 @@
-// Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as apiLogin } from "../src/api/api";
 import { useAuth } from "../src/context/AuthContext";
+import { toast } from "react-toastify";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,6 +18,7 @@ function Login() {
       const { token, user } = res.data;
 
       contextLogin(token, user);
+      toast.success("Login successful!");
 
       if (user.role === "admin") {
         navigate("/admin");
@@ -25,10 +26,8 @@ function Login() {
         navigate("/");
       }
     } catch (err) {
-      console.error(
-        "Login failed:",
-        err.response?.data?.message || err.message
-      );
+      console.error("Login failed:", err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || "Login failed. Please try again.");
     }
   };
 

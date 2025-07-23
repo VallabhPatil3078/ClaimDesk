@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { useAuth } from '../src/context/AuthContext';
-import { addLostItem } from '../src/api/api';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../src/context/AuthContext";
+import { addLostItem } from "../src/api/api";
+import { useNavigate } from "react-router-dom";
 import LocationAutocomplete from "../components/LocationAutocomplete";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ReportLost() {
   const [formData, setFormData] = useState({
@@ -13,18 +15,13 @@ function ReportLost() {
   });
 
   const [photoPreview, setPhotoPreview] = useState(null);
-
   const { authToken } = useAuth();
   const navigate = useNavigate();
 
-  // Capitalize first letter and proper nouns
   const capitalizeInput = (text) =>
     text
       .split(" ")
-      .map(
-        (word) =>
-          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-      )
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(" ");
 
   const handleChange = (e) => {
@@ -65,16 +62,19 @@ function ReportLost() {
 
     try {
       await addLostItem(data, authToken);
-      alert("Lost item reported successfully!");
+      toast.success("✅ Lost item reported successfully!");
       handleReset();
-      navigate("/lost-item");
+      setTimeout(() => navigate("/lost-item"), 2000);
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to report lost item");
+      toast.error(
+        error.response?.data?.message || "❌ Failed to report lost item"
+      );
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 via-blue-50 to-white">
+      <ToastContainer />
       <main className="flex-grow flex items-center justify-center pt-16 sm:pt-20 pb-12 px-4 sm:px-6">
         <form
           onSubmit={handleSubmit}
