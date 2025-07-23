@@ -1,8 +1,8 @@
-// Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as apiLogin } from "../src/api/api";
 import { useAuth } from "../src/context/AuthContext";
+import { toast } from "react-toastify";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,21 +18,17 @@ function Login() {
       const { token, user } = res.data;
 
       contextLogin(token, user);
+      toast.success("Login successful!");
 
-      if (user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      navigate(user.role === "admin" ? "/admin" : "/");
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      if (msg === 'Please verify your email before logging in') {
-        alert('Please verify your email. Check your inbox.');
-      } else {
-        alert(msg);
-      }
-      console.error('Login failed:', msg);
-
+      console.error("Login failed:", msg);
+      toast.error(
+        msg === 'Please verify your email before logging in'
+          ? 'Please verify your email. Check your inbox.'
+          : msg
+      );
     }
   };
 

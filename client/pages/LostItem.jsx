@@ -3,6 +3,7 @@ import { FiSearch } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import ItemCard from '../components/ItemCard';
 import { fetchLostItems } from '../src/api/api';
+import { toast } from 'react-toastify';
 
 function LostItem() {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ function LostItem() {
 
       setLostItems(items);
     } catch (error) {
+      toast.error('Failed to fetch lost items. Try again later.');
       console.error('Failed to fetch lost items:', error);
     } finally {
       setLoading(false);
@@ -52,7 +54,6 @@ function LostItem() {
 
         {/* Search, filters, and button */}
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-stretch justify-center gap-3 sm:gap-4 mb-10 sm:mb-12">
-          {/* Search by name */}
           <div className="relative w-full lg:w-1/4">
             <input
               type="text"
@@ -64,7 +65,6 @@ function LostItem() {
             <FiSearch className="absolute top-1/2 right-3 sm:right-4 transform -translate-y-1/2 text-gray-500 text-lg sm:text-xl" />
           </div>
 
-          {/* Filter by Date */}
           <input
             type="date"
             value={filterDate}
@@ -72,7 +72,6 @@ function LostItem() {
             className="w-full lg:w-1/4 py-2 sm:py-3 px-3 sm:px-4 rounded-xl border border-gray-300 shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
           />
 
-          {/* Filter by Location */}
           <input
             type="text"
             value={filterLocation}
@@ -81,7 +80,6 @@ function LostItem() {
             className="w-full lg:w-1/4 py-2 sm:py-3 px-3 sm:px-4 rounded-xl border border-gray-300 shadow-sm bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
           />
 
-          {/* Report Lost Item button */}
           <button
             onClick={() => navigate('/report-lost')}
             className="w-full lg:w-1/4 bg-red-600 text-white py-2 sm:py-3 rounded-xl shadow hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition duration-200 transform hover:-translate-y-1 hover:shadow-lg"

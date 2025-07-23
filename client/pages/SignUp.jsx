@@ -5,6 +5,7 @@ import { useAuth } from '../src/context/AuthContext';
 import googleIcon from '../assets/google.svg';
 import facebookIcon from '../assets/facebook.svg';
 import appleIcon from '../assets/apple.svg';
+import { toast } from 'react-toastify';
 
 function SignUp() {
   const [formData, setFormData] = useState({
@@ -28,12 +29,12 @@ function SignUp() {
 
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(formData.name)) {
-      console.error('Name must contain only letters and spaces.');
+      toast.error('Name must contain only letters and spaces.');
       return;
     }
 
     if (formData.role === 'admin' && !formData.inviteCode) {
-      console.error('Admin invite code is required.');
+      toast.warning('Admin invite code is required.');
       return;
     }
 
@@ -43,22 +44,23 @@ function SignUp() {
 
       if (user.role === 'admin') {
         contextLogin(token, user);
+        toast.success('Admin signup successful!');
         navigate('/admin');
-        console.log('Admin signed up successfully');
       } else {
-        alert('Signup successful! Please check your email to verify your account.');
+        toast.success('Signup successful! Please check your email to verify.');
         navigate('/login');
       }
 
     } catch (err) {
-      console.error('Signup failed:', err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || 'Signup failed. Please try again.');
+      console.error('Signup failed:', err);
     }
   };
 
   const handleSocialLoginClick = (e) => {
     if (formData.role === 'admin') {
       e.preventDefault();
-      alert('Admin signup via social login is not allowed.');
+      toast.info('Admin signup via social login is not allowed.');
     }
   };
 
