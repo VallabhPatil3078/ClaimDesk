@@ -1,19 +1,25 @@
-// server/controllers/authController.js
-
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_INVITE_CODE = process.env.ADMIN_INVITE_CODE; // ✅ Set this in .env
 
 // Signup
 exports.signup = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, inviteCode } = req.body;
 
     // Check if email is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: 'Email already in use' });
+
+    // ✅ Block admin registration unless correct invite code is provided
+    if (role === 'admin') {
+      if (inviteCode !== ADMIN_INVITE_CODE) {
+        return res.status(403).json({ message: 'Invalid or missing invite code for admin registration' });
+      }
+    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,7 +36,7 @@ exports.signup = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
+      JWT_SECRET,
       { expiresIn: '1h' }
     );
 
@@ -50,7 +56,6 @@ exports.signup = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 // Login
 exports.login = async (req, res) => {
