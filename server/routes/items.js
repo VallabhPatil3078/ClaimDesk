@@ -1,5 +1,3 @@
-// routes/items.js
-
 const express = require('express');
 const router = express.Router();
 
@@ -7,13 +5,15 @@ const requireAuth = require('../middleware/authMiddleware');
 const upload = require('../middleware/multer');
 const Item = require('../models/Items');
 
+// ✅ Destructure all controllers at once
 const {
   addItem,
   getAllItems,
   getMyItems,
   deleteItem,
   updateItem,
-  notifyOwner
+  notifyOwner,
+  deleteViaLink, // keep only this one
 } = require('../controllers/itemController');
 
 // Add new item
@@ -24,6 +24,9 @@ router.get('/', getAllItems);
 
 // Get logged-in user's items
 router.get('/my', requireAuth, getMyItems);
+
+// 🔗 Delete via secure token link
+router.get('/delete-via-link/:token', deleteViaLink);
 
 // Get single item by ID
 router.get('/:id', requireAuth, async (req, res) => {
@@ -50,7 +53,6 @@ router.patch('/:id/status', requireAuth, async (req, res) => {
     const item = await Item.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found' });
 
-    // Allow only owners or admins
     if (item.user.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update status' });
     }

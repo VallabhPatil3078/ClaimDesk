@@ -1,6 +1,7 @@
 const cloudinary = require('cloudinary').v2;
 const Item = require('../models/Items');
 const SendMails = require('../models/SendMails');
+const jwt = require('jsonwebtoken');
 
 // POST /api/items - Add new item
 const addItem = async (req, res) => {
@@ -166,6 +167,9 @@ const notifyOwner = async (req, res) => {
     const senderName = req.user.name;
     const senderEmail = req.user.email;
 
+    const token = jwt.sign({ itemId: item._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    const deleteLink = `${process.env.CLIENT_URL || 'http://localhost:5173'}/api/items/delete-via-link/${token}`;
+
     const emailText = `
 Hi ${item.user.name},
 
@@ -177,6 +181,9 @@ ${message || "No message provided."}
 Notifier:
 Name: ${senderName}
 Email: ${senderEmail}
+
+If this item has already been claimed, you can delete it directly using this link:
+${deleteLink}
 `;
 
     await SendMails({
@@ -188,9 +195,26 @@ Email: ${senderEmail}
     console.log('✅ Email sent successfully');
     res.status(200).json({ success: true });
   } catch (err) {
-  console.error('Notify Owner Error:', err); // Already exists
-  res.status(500).json({ error: 'Failed to notify owner' });
-}
+    console.error('Notify Owner Error:', err);
+    res.status(500).json({ error: 'Failed to notify owner' });
+  }
+};
+
+// GET /api/items/delete-via-link/:token
+const deleteViaLink = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const itemId = decoded.itemId;
+
+    const deleted = await Item.findByIdAndDelete(itemId);
+    if (!deleted) return res.status(404).send('Item already deleted or not found');
+
+    res.send(`<h2>✅ Item deleted successfully.</h2><p>You can now close this tab.</p>`);
+  } catch (err) {
+    console.error('❌ Invalid or expired delete token:', err.message);
+    res.status(400).send(`<h2>❌ Invalid or expired link.</h2><p>Please try again.</p>`);
+  }
 };
 
 module.exports = {
@@ -201,4 +225,5 @@ module.exports = {
   updateItem,
   toggleStatus,
   notifyOwner,
+  deleteViaLink
 };
